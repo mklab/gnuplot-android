@@ -204,6 +204,7 @@ public class MainActivity extends Activity implements KeyboardListner {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		this.myKeyboard = (MyKeyboard) findViewById(R.id.myKeyboard);
 		this.myKeyboard.setKeyboardLisner(this);
+		setEditText(this.mCmdEditText);
 	}
 
 	public void scrollToBottom() {
