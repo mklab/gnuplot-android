@@ -1,0 +1,10 @@
+version.o: version.c version.h syscfg.h ../config.h \
+  /hwnet/gnu/x86_64/gcc-4.3.6/lib/gcc/x86_64-unknown-linux-gnu/4.3.6/include/stdbool.h
+
+version.h:
+
+syscfg.h:
+
+../config.h:
+
+/hwnet/gnu/x86_64/gcc-4.3.6/lib/gcc/x86_64-unknown-linux-gnu/4.3.6/include/stdbool.h:

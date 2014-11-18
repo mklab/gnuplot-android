@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewSwitcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/terminalLayout"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    >
+	    <ScrollView
+	    	android:id="@+id/scrollView"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent"
+	    	android:layout_weight="1"
+	    	android:scrollbars="vertical"
+	    	android:fillViewport="true">
+	        <TextView
+	        	android:id="@+id/termWindow"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="fill_parent"
+	        	android:maxLines="200"
+	        	android:textSize="16sp"
+	        	android:layout_weight="1"/>
+	    </ScrollView>
+	    <LinearLayout
+	        android:orientation="horizontal"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        >
+	        <TextView  
+	        	android:layout_width="40sp" 
+	        	android:layout_height="wrap_content" 
+	        	android:text=">> "
+	        	android:textSize="16sp"
+	        />
+	        <EditText
+	        	android:id="@+id/edit_command"
+	            style="?android:attr/textViewStyle"
+	            android:background="@null"
+	            android:textColor="@null"        
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:textSize="16sp"
+	        />  
+	    </LinearLayout>
+	</LinearLayout>
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/plotLayout"
+	    android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    >
+	</LinearLayout>
+</ViewSwitcher>
