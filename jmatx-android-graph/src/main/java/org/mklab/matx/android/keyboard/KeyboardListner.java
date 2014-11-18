@@ -8,26 +8,6 @@ import android.inputmethodservice.KeyboardView;
  */
 public interface KeyboardListner extends KeyboardView.OnKeyboardActionListener{
 	/**
-	 * バックスペースが押された時の挙動です。
-	 */
-	public void handleBackspace();
-	/**
-	 * Enterが押された時の挙動です。
-	 */
-	public void handleEnter();
-	/**
-	 * Spaceが押された時の挙動です。
-	 */
-	public void handleSpace();
-	/**
-	 * edittextのカーソルを左に動かします。
-	 */
-	public void moveLeftCursor();
-	/**
-	 * edittextのカーソルを右に動かします。
-	 */
-	public void moveRightCursor();
-	/**
 	 * keyDownコードを送信します
 	 * 
 	 * @param key_code

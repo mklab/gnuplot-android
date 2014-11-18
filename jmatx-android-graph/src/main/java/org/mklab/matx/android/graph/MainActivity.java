@@ -3,6 +3,8 @@ package org.mklab.matx.android.graph;
 import java.io.OutputStreamWriter;
 
 import org.mklab.matx.android.graph.session.TermSession;
+import org.mklab.matx.android.keyboard.KeyboardListner;
+import org.mklab.matx.android.keyboard.MyKeyboard;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,6 +22,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -30,7 +33,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements KeyboardListner {
 	DemoView demoview = null;
 	private Canvas _canvas = null;
 	private Bitmap _bitmap = null;
@@ -46,44 +49,47 @@ public class MainActivity extends Activity {
 	public TextView mTextView;
 	public ScrollView mScrollView;
 	public EditText mCmdEditText;
-	private String textViewString = "";
-	private String partialLine = "";
+	private String textViewString = ""; //$NON-NLS-1$
+	private String partialLine = ""; //$NON-NLS-1$
 	private int _linetype;
 	private int _linewidth;
-	private String _justMode = "LEFT";
+	private String _justMode = "LEFT"; //$NON-NLS-1$
 	private boolean _ready = false;
 	private boolean _plotDataPresent = false;
-	private String _plotData = "";
+	private String _plotData = ""; //$NON-NLS-1$
 	private MainActivity _sessionParent = null;
 	private static final int REQUEST_CODE_GRAPH = 2;
 	private static final int RESULT_CODE_SUB_GRAPH = 101;
 	private TermSession mTermSession;
-	private boolean _isCalledIntent= false;
+	private boolean _isCalledIntent = false;
+	private MyKeyboard myKeyboard;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
+		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
 
-		mPlotLayout = (LinearLayout) findViewById(R.id.plotLayout);
+		this.mPlotLayout = (LinearLayout) findViewById(R.id.plotLayout);
 
-		mTextView = (TextView) findViewById(R.id.termWindow);
+		this.mTextView = (TextView) findViewById(R.id.termWindow);
 
-		mScrollView = (ScrollView) findViewById(R.id.scrollView);
+		this.mScrollView = (ScrollView) findViewById(R.id.scrollView);
 
-		mCmdEditText = (EditText) findViewById(R.id.edit_command);
+		this.mCmdEditText = (EditText) findViewById(R.id.edit_command);
 
-		mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
+		this.mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
 
-		mCmdEditText.setOnKeyListener(new OnKeyListener() {
+		this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					if ((keyCode == KeyEvent.KEYCODE_ENTER) && (_ready == true)) {
-						String command = mCmdEditText.getText().toString();
-						mCmdEditText.setText("");
-						mTermSession.write(command + "\n");
+					if ((keyCode == KeyEvent.KEYCODE_ENTER)
+							&& (MainActivity.this._ready == true)) {
+						String command = MainActivity.this.mCmdEditText
+								.getText().toString();
+						MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
+						MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
 						return true;
 					}
 				}
@@ -91,139 +97,164 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		_sessionParent = this;
+		this._sessionParent = this;
 
-		ViewTreeObserver viewTreeObserver = mTerminalLayout
+		ViewTreeObserver viewTreeObserver = this.mTerminalLayout
 				.getViewTreeObserver();
 		if (viewTreeObserver.isAlive()) {
-			System.out.println("viewTree");
+			System.out.println("viewTree"); //$NON-NLS-1$
 			viewTreeObserver
 					.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 						public void onGlobalLayout() {
-							mTerminalLayout.getViewTreeObserver()
+							MainActivity.this.mTerminalLayout
+									.getViewTreeObserver()
 									.removeGlobalOnLayoutListener(this);
-							_screenHeight = mTerminalLayout.getHeight();
-							_screenWidth = mTerminalLayout.getWidth();
-							if (_screenWidth < _screenHeight) {
-								_screenHeight = _screenWidth;
+							MainActivity.this._screenHeight = MainActivity.this.mTerminalLayout
+									.getHeight();
+							MainActivity.this._screenWidth = MainActivity.this.mTerminalLayout
+									.getWidth();
+							if (MainActivity.this._screenWidth < MainActivity.this._screenHeight) {
+								MainActivity.this._screenHeight = MainActivity.this._screenWidth;
 							} else {
-								_screenWidth = _screenHeight;
+								MainActivity.this._screenWidth = MainActivity.this._screenHeight;
 							}
 							// Converts 14 dip into its equivalent px
 							Resources r = getResources();
-							_textHeight = (int) TypedValue.applyDimension(
-									TypedValue.COMPLEX_UNIT_DIP, 14,
-									r.getDisplayMetrics());
+							MainActivity.this._textHeight = (int) TypedValue
+									.applyDimension(
+											TypedValue.COMPLEX_UNIT_DIP, 14,
+											r.getDisplayMetrics());
 							Paint paint = new Paint();
 							paint.setStyle(Paint.Style.STROKE);
-							paint.setTextSize(_textHeight);
+							paint.setTextSize(MainActivity.this._textHeight);
 							paint.setTypeface(Typeface.MONOSPACE);
-							_textWidth = (int) paint.measureText("A");
-							System.out.println("Create BitMap");
-							_bitmap = Bitmap.createBitmap(_screenWidth,
-									_screenHeight, Bitmap.Config.ARGB_8888);
-							System.out.println(_bitmap);
-							_canvas = new Canvas(_bitmap);
+							MainActivity.this._textWidth = (int) paint
+									.measureText("A"); //$NON-NLS-1$
+							System.out.println("Create BitMap"); //$NON-NLS-1$
+							MainActivity.this._bitmap = Bitmap.createBitmap(
+									MainActivity.this._screenWidth,
+									MainActivity.this._screenHeight,
+									Bitmap.Config.ARGB_8888);
+							System.out.println(MainActivity.this._bitmap);
+							MainActivity.this._canvas = new Canvas(
+									MainActivity.this._bitmap);
 
-							mTermSession = new TermSession(_sessionParent);
-							mTermSession.updateSize(1024, 1024);
-							
-							if (_canvas != null) {
-								Log.d("GRAPH IMAGE", _canvas.toString());	
-							}else{
-								 Log.d("GRAPH IMAGE","CANVAS NULL");	
+							MainActivity.this.mTermSession = new TermSession(
+									MainActivity.this._sessionParent);
+							MainActivity.this.mTermSession.updateSize(1024,
+									1024);
+
+							if (MainActivity.this._canvas != null) {
+								Log.d("GRAPH IMAGE", MainActivity.this._canvas.toString()); //$NON-NLS-1$
+							} else {
+								Log.d("GRAPH IMAGE", "CANVAS NULL"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
-							
-						}			
-						
-						
+
+						}
+
 					});
 		}
-
+		setKeyboard();
 		onNewIntent(getIntent());
-	
-	}
 
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		setIntent(intent);
-		_ready = false;
-		_plotData = intent.getStringExtra("plotData");
+		this._ready = false;
+		this._plotData = intent.getStringExtra("plotData"); //$NON-NLS-1$
 
-		_plotDataPresent = false;
-		if (_plotData != null && _plotData.length() > 0) {
-			_isCalledIntent = true;
-			//mPlotLayout.setVisibility(View.INVISIBLE);
+		this._plotDataPresent = false;
+		if (this._plotData != null && this._plotData.length() > 0) {
+			this._isCalledIntent = true;
+			// mPlotLayout.setVisibility(View.INVISIBLE);
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			String fileName = "tempPlotData.csv";
+			String fileName = "tempPlotData.csv"; //$NON-NLS-1$
 			OutputStreamWriter out;
 			try {
 				out = new OutputStreamWriter(openFileOutput(fileName,
 						Context.MODE_WORLD_READABLE
 								| Context.MODE_WORLD_WRITEABLE));
-				_plotData = _plotData.replaceAll(";", "\n");
-				out.write(_plotData);
+				this._plotData = this._plotData.replaceAll(";", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+				out.write(this._plotData);
 				out.flush();
 				out.close();
-				_plotDataPresent = true;
+				this._plotDataPresent = true;
 			} catch (Exception e) {
 			}
 		}
 
 	}
 
+	private void setKeyboard() {
+		// this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		// my keyboard set
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		this.myKeyboard = (MyKeyboard) findViewById(R.id.myKeyboard);
+		this.myKeyboard.setKeyboardLisner(this);
+	}
+
 	public void scrollToBottom() {
-		mScrollView.post(new Runnable() {
+		this.mScrollView.post(new Runnable() {
 			public void run() {
-				mScrollView.smoothScrollTo(0, mTextView.getBottom());
-				if (_ready == false && partialLine.startsWith("gnuplot>")) { // prompt
-																				// is
-																				// up
-					_ready = true;
-					String fileName = "startup.p";
+				MainActivity.this.mScrollView.smoothScrollTo(0,
+						MainActivity.this.mTextView.getBottom());
+				if (MainActivity.this._ready == false
+						&& MainActivity.this.partialLine.startsWith("gnuplot>")) { // prompt //$NON-NLS-1$
+					// is
+					// up
+					MainActivity.this._ready = true;
+					String fileName = "startup.p"; //$NON-NLS-1$
 					OutputStreamWriter out;
 					try {
 						out = new OutputStreamWriter(openFileOutput(fileName,
 								Context.MODE_WORLD_READABLE
 										| Context.MODE_WORLD_WRITEABLE));
-						out.write("set term android size "
-								+ Integer.toString(_screenWidth) + ","
-								+ Integer.toString(_screenHeight)
-								+ " charsize " + Integer.toString(_textWidth)
-								+ "," + Integer.toString(_textHeight)
-								+ " ticsize " + Integer.toString(_textWidth)
-								+ "," + Integer.toString(_textWidth) + "\n");
+						out.write("set term android size " //$NON-NLS-1$
+								+ Integer
+										.toString(MainActivity.this._screenWidth)
+								+ "," //$NON-NLS-1$
+								+ Integer
+										.toString(MainActivity.this._screenHeight)
+								+ " charsize " + Integer.toString(MainActivity.this._textWidth) //$NON-NLS-1$
+								+ "," + Integer.toString(MainActivity.this._textHeight) //$NON-NLS-1$
+								+ " ticsize " + Integer.toString(MainActivity.this._textWidth) //$NON-NLS-1$
+								+ "," + Integer.toString(MainActivity.this._textWidth) + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
-						if (_plotDataPresent == true) {
+						if (MainActivity.this._plotDataPresent == true) {
 							// if (false) {
 
-							_plotData = _plotData.replaceAll(";", "\n");
-							String lines[] = _plotData.split("\\n");
-							String lines2[] = lines[0].split(",");
+							MainActivity.this._plotData = MainActivity.this._plotData
+									.replaceAll(";", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+							String lines[] = MainActivity.this._plotData
+									.split("\\n"); //$NON-NLS-1$
+							String lines2[] = lines[0].split(","); //$NON-NLS-1$
 							int lineCount = (lines2.length + 1) / 2;
-							out.write("set datafile separator \",\" \n");
-							out.write("set nokey \n");
-							String command = "plot \"" + getFilesDir()
-									+ "/tempPlotData.csv\" using ";
+							out.write("set datafile separator \",\" \n"); //$NON-NLS-1$
+							out.write("set nokey \n"); //$NON-NLS-1$
+							String command = "plot \"" + getFilesDir() //$NON-NLS-1$
+									+ "/tempPlotData.csv\" using "; //$NON-NLS-1$
 							for (int lineNum = 0; lineNum < lineCount; lineNum++) {
 								if (lineNum != 0) {
-									command = command + ", ";
+									command = command + ", "; //$NON-NLS-1$
 								}
 								command = command
 										+ Integer.toString(lineNum * 2 + 1)
-										+ ":"
+										+ ":" //$NON-NLS-1$
 										+ Integer.toString(lineNum * 2 + 2);
 							}
-							command = command + " with lines \n";
+							command = command + " with lines \n"; //$NON-NLS-1$
 							out.write(command);
 
 						}
 						out.flush();
 						out.close();
-						mTermSession.write("load \"" + getFilesDir()
-								+ "/startup.p\" \n");
+						MainActivity.this.mTermSession
+								.write("load \"" + getFilesDir() //$NON-NLS-1$
+										+ "/startup.p\" \n"); //$NON-NLS-1$
 					} catch (Exception e) {
 						;
 					}
@@ -233,21 +264,21 @@ public class MainActivity extends Activity {
 	}
 
 	private void init() {
-		if (_bitmap == null) {
+		if (this._bitmap == null) {
 
 		}
-		if (_canvas == null) {
+		if (this._canvas == null) {
 
 		}
 
-		if (demoview == null) {
-			demoview = new DemoView(this);
-			demoview.setLayoutParams(new ViewGroup.LayoutParams(
+		if (this.demoview == null) {
+			this.demoview = new DemoView(this);
+			this.demoview.setLayoutParams(new ViewGroup.LayoutParams(
 					ViewGroup.LayoutParams.FILL_PARENT,
 					ViewGroup.LayoutParams.FILL_PARENT));
-			mPlotLayout.addView(demoview);
-			mPlotLayout.invalidate();
-			mSwitcher.invalidate();
+			this.mPlotLayout.addView(this.demoview);
+			this.mPlotLayout.invalidate();
+			this.mSwitcher.invalidate();
 		}
 	}
 
@@ -257,77 +288,78 @@ public class MainActivity extends Activity {
 
 		// make the entire canvas white
 		paint.setColor(Color.WHITE);
-		Log.d("GRAPH IMAGE","PAINT");	
-		_canvas.drawPaint(paint);
+		Log.d("GRAPH IMAGE", "PAINT"); //$NON-NLS-1$ //$NON-NLS-2$
+		this._canvas.drawPaint(paint);
 	}
 
 	private void linewidth(int width) {
-		_linewidth = width;
+		this._linewidth = width;
 	}
 
 	private void linetype(int type) {
-		_linetype = type;
+		this._linetype = type;
 	}
 
 	private void justify_text(String mode) {
-		_justMode = mode;
+		this._justMode = mode;
 	}
 
 	private void move(int x, int y) {
-		_x = x;
-		_y = y;
+		this._x = x;
+		this._y = y;
 	}
 
 	private void vector(int x, int y) {
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(_linewidth);
+		paint.setStrokeWidth(this._linewidth);
 
-		if (_linetype < 0) {
+		if (this._linetype < 0) {
 			paint.setColor(Color.BLACK);
-		} else if ((_linetype % 9) == 0) {
+		} else if ((this._linetype % 9) == 0) {
 			paint.setColor(Color.RED);
-		} else if ((_linetype % 9) == 1) {
+		} else if ((this._linetype % 9) == 1) {
 			paint.setColor(Color.GREEN);
-		} else if ((_linetype % 9) == 2) {
+		} else if ((this._linetype % 9) == 2) {
 			paint.setColor(Color.BLUE);
-		} else if ((_linetype % 9) == 3) {
+		} else if ((this._linetype % 9) == 3) {
 			paint.setColor(Color.MAGENTA);
-		} else if ((_linetype % 9) == 4) {
+		} else if ((this._linetype % 9) == 4) {
 			paint.setColor(Color.CYAN);
-		} else if ((_linetype % 9) == 5) {
+		} else if ((this._linetype % 9) == 5) {
 			paint.setColor(Color.YELLOW);
-		} else if ((_linetype % 9) == 6) {
+		} else if ((this._linetype % 9) == 6) {
 			paint.setColor(Color.BLACK);
-		} else if ((_linetype % 9) == 7) {
+		} else if ((this._linetype % 9) == 7) {
 			paint.setARGB(1, 139, 69, 19);
-		} else if ((_linetype % 9) == 8) {
+		} else if ((this._linetype % 9) == 8) {
 			paint.setColor(Color.LTGRAY);
 		} else {
 			paint.setColor(Color.BLACK);
 		}
-		Log.d("GRAPH IMAGE","DRAWLINE");	
-		_canvas.drawLine(_x, _screenHeight - _y, x, _screenHeight - y, paint);
-		_x = x;
-		_y = y;
+		Log.d("GRAPH IMAGE", "DRAWLINE"); //$NON-NLS-1$ //$NON-NLS-2$
+		this._canvas.drawLine(this._x, this._screenHeight - this._y, x,
+				this._screenHeight - y, paint);
+		this._x = x;
+		this._y = y;
 	}
 
 	private void text(int x, int y, String text) {
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(_linewidth);
+		paint.setStrokeWidth(this._linewidth);
 		paint.setColor(Color.BLACK);
-		paint.setTextSize(_textHeight);
+		paint.setTextSize(this._textHeight);
 		paint.setTypeface(Typeface.MONOSPACE);
-		if (_justMode.equals("RIGHT")) {
+		if (this._justMode.equals("RIGHT")) { //$NON-NLS-1$
 			paint.setTextAlign(Align.RIGHT);
-		} else if (_justMode.equals("CENTRE")) {
+		} else if (this._justMode.equals("CENTRE")) { //$NON-NLS-1$
 			paint.setTextAlign(Align.CENTER);
 		} else {
 			paint.setTextAlign(Align.LEFT);
 		}
-		Log.d("GRAPH IMAGE","DRAW TEXT");	
-		_canvas.drawText(text, x, _screenHeight - y, paint);
+		Log.d("GRAPH IMAGE", "DRAW TEXT"); //$NON-NLS-1$ //$NON-NLS-2$
+		this._canvas.drawText(text, x, this._screenHeight - y, paint);
 	}
 
 	private class DemoView extends View {
@@ -339,7 +371,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-			canvas.drawBitmap(_bitmap, 0, 0, null);
+			canvas.drawBitmap(MainActivity.this._bitmap, 0, 0, null);
 			// _canvas = canvas;
 
 			// custom drawing code here
@@ -496,23 +528,23 @@ public class MainActivity extends Activity {
 
 	public void processString(String newTermOut) {
 
-		String modifiedTermOut = partialLine + newTermOut;
+		String modifiedTermOut = this.partialLine + newTermOut;
 		int incompleteLine;
-		String lines[] = modifiedTermOut.split("\\r?\\n");
+		String lines[] = modifiedTermOut.split("\\r?\\n"); //$NON-NLS-1$
 		if ((lines.length > 0) && (modifiedTermOut.length() > 0)) {
 			if ((modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\n')
 					|| (modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\r')) {
 				incompleteLine = 0;
-				partialLine = "";
+				this.partialLine = ""; //$NON-NLS-1$
 			} else {
 				incompleteLine = 1;
-				partialLine = lines[lines.length - 1];
+				this.partialLine = lines[lines.length - 1];
 			}
 			for (int lineNum = 0; lineNum < lines.length - incompleteLine; lineNum++) {
-				if (lines[lineNum].startsWith("ANDROIDTERM")) {
-					lines[lineNum] = lines[lineNum].replaceAll("\\r|\\n", "");
-					String termCommand[] = lines[lineNum].split(",");
-					if (termCommand[1].equals("move")) {
+				if (lines[lineNum].startsWith("ANDROIDTERM")) { //$NON-NLS-1$
+					lines[lineNum] = lines[lineNum].replaceAll("\\r|\\n", ""); //$NON-NLS-1$ //$NON-NLS-2$
+					String termCommand[] = lines[lineNum].split(","); //$NON-NLS-1$
+					if (termCommand[1].equals("move")) { //$NON-NLS-1$
 						try {
 							move(Integer.parseInt(termCommand[2]),
 									Integer.parseInt(termCommand[3]));
@@ -520,7 +552,7 @@ public class MainActivity extends Activity {
 							// Toast.makeText(getBaseContext(), "why am I here",
 							// Toast.LENGTH_LONG).show();
 						}
-					} else if (termCommand[1].equals("vector")) {
+					} else if (termCommand[1].equals("vector")) { //$NON-NLS-1$
 						try {
 							vector(Integer.parseInt(termCommand[2]),
 									Integer.parseInt(termCommand[3]));
@@ -528,50 +560,52 @@ public class MainActivity extends Activity {
 							// Toast.makeText(getBaseContext(), "why am I here",
 							// Toast.LENGTH_LONG).show();
 						}
-					} else if (termCommand[1].equals("put_text")) {
+					} else if (termCommand[1].equals("put_text")) { //$NON-NLS-1$
 						text(Integer.parseInt(termCommand[2]),
 								Integer.parseInt(termCommand[3]),
 								termCommand[4]);
-					} else if (termCommand[1].equals("linetype")) {
+					} else if (termCommand[1].equals("linetype")) { //$NON-NLS-1$
 						linetype(Integer.parseInt(termCommand[2]));
-					} else if (termCommand[1].equals("linewidth")) {
+					} else if (termCommand[1].equals("linewidth")) { //$NON-NLS-1$
 						linewidth(Integer.parseInt(termCommand[2]));
-					} else if (termCommand[1].equals("justify_text")) {
+					} else if (termCommand[1].equals("justify_text")) { //$NON-NLS-1$
 						justify_text(termCommand[2]);
-					} else if (termCommand[1].equals("init")) {
+					} else if (termCommand[1].equals("init")) { //$NON-NLS-1$
 						init();
-					} else if (termCommand[1].equals("graphics")) {
+					} else if (termCommand[1].equals("graphics")) { //$NON-NLS-1$
 						graphics();
-					} else if (termCommand[1].equals("text")) {
-						demoview.invalidate();
-						mSwitcher.showNext();
+					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
+						this.demoview.invalidate();
+						this.mSwitcher.showNext();
 					}
 				} else {
-					textViewString = textViewString + lines[lineNum] + "\n";
+					this.textViewString = this.textViewString + lines[lineNum]
+							+ "\n"; //$NON-NLS-1$
 				}
 			}
 		}
-		String textLines[] = textViewString.split("\\n");
-		textViewString = "";
+		String textLines[] = this.textViewString.split("\\n"); //$NON-NLS-1$
+		this.textViewString = ""; //$NON-NLS-1$
 		int lineNum;
 		int lineCount;
 		for (lineNum = textLines.length - 1, lineCount = 0; (lineNum >= 0)
 				&& (lineCount < 1000); lineNum--, lineCount++) {
-			textViewString = textLines[lineNum] + "\n" + textViewString;
+			this.textViewString = textLines[lineNum]
+					+ "\n" + this.textViewString; //$NON-NLS-1$
 		}
-		mTextView.setText(textViewString);
+		this.mTextView.setText(this.textViewString);
 		scrollToBottom();
-		//saveBitmapToSd(_bitmap);	
+		// saveBitmapToSd(_bitmap);
 	}
-	
-	public void sendBitmap(){
-		if(_isCalledIntent){
+
+	public void sendBitmap() {
+		if (this._isCalledIntent) {
 			Intent intent_ret = new Intent();
-			Bundle b = new Bundle();  
-			b.putParcelable("data", _bitmap);  
-			intent_ret.putExtra("ReturnData", b);
-			//intent_ret.setType("image/*");
-			setResult(RESULT_OK, intent_ret);								
+			Bundle b = new Bundle();
+			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
+			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
+			// intent_ret.setType("image/*");
+			setResult(RESULT_OK, intent_ret);
 			finish();
 		}
 	}
@@ -579,21 +613,71 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (_plotDataPresent) {
-				if (mSwitcher.getDisplayedChild() != 1) {
-					mSwitcher.showPrevious();
+			if (this._plotDataPresent) {
+				if (this.mSwitcher.getDisplayedChild() != 1) {
+					this.mSwitcher.showPrevious();
 					return true;
 				} else {
 					return super.onKeyDown(keyCode, event);
 				}
-			} else if (mSwitcher.getDisplayedChild() != 0) {
-				mSwitcher.showPrevious();
+			} else if (this.mSwitcher.getDisplayedChild() != 0) {
+				this.mSwitcher.showPrevious();
 				return true;
 			} else {
 				return super.onKeyDown(keyCode, event);
 			}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	public void onPress(int primaryCode) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onRelease(int primaryCode) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onKey(int primaryCode, int[] keyCodes) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onText(CharSequence text) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void swipeLeft() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void swipeRight() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void swipeDown() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void swipeUp() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void sendKeyDown(int key_code) {
+		// TODO Auto-generated method stub
+		System.out.println("KEY CODE " + key_code);
+	}
+
+	public void sendInputText(String inputText) {
+		// TODO Auto-generated method stub
+		System.out.println("KEY INPUT " + inputText);
 	}
 
 }
