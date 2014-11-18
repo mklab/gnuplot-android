@@ -90,21 +90,21 @@ public class MainActivity extends Activity implements KeyboardListner {
 
 		this.mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
 
-		this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					if ((keyCode == KeyEvent.KEYCODE_ENTER)
-							&& (MainActivity.this._ready == true)) {
-						String command = MainActivity.this.mCmdEditText
-								.getText().toString();
-						MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
-						MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
+		// public boolean onKey(View view, int keyCode, KeyEvent event) {
+		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
+		// if ((keyCode == KeyEvent.KEYCODE_ENTER)
+		// && (MainActivity.this._ready == true)) {
+		// String command = MainActivity.this.mCmdEditText
+		// .getText().toString();
+		//						MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
+		//						MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
+		// return true;
+		// }
+		// }
+		// return false;
+		// }
+		// });
 
 		this._sessionParent = this;
 
@@ -274,13 +274,6 @@ public class MainActivity extends Activity implements KeyboardListner {
 	}
 
 	private void init() {
-		if (this._bitmap == null) {
-
-		}
-		if (this._canvas == null) {
-
-		}
-
 		if (this.demoview == null) {
 			this.demoview = new DemoView(this);
 			this.demoview.setLayoutParams(new ViewGroup.LayoutParams(
@@ -683,13 +676,22 @@ public class MainActivity extends Activity implements KeyboardListner {
 	public void sendKeyDown(int key_code) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code);
+
+		if ((key_code == KeyEvent.KEYCODE_ENTER)
+				&& (MainActivity.this._ready == true)) {
+			String command = MainActivity.this.mCmdEditText.getText()
+					.toString();
+			MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
+			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
+
+		}
+
 		CustomEditTextFunction.sendKeyCode(this.editTextList.get(0), key_code);
 	}
 
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText);
-
 		CustomEditTextFunction.insertText(this.editTextList.get(0), inputText);
 	}
 
