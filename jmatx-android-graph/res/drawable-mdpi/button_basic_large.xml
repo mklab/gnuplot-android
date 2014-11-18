@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<!-- ボタン押下時の配色 -->
+    <item android:state_pressed="true">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+		<stroke android:width="2sp" android:color="#cccccc" />
+		<corners android:radius="10sp" />
+	    <gradient
+	        android:angle="270"
+	        android:startColor="#fffffc"
+	        android:centerColor="#f3f3f3"
+	        android:endColor="#e5e4e6"
+	        android:type="linear"
+	        android:centerX="0.5"
+	        android:centerY="0.5"
+	    />
+	</shape>
+    </item>
+
+    <!-- ボタン未押下時の配色 -->
+    <item android:state_pressed="false">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+		<stroke android:width="2sp" android:color="#cccccc" />
+		<corners android:radius="10sp" />
+	    <gradient
+	        android:angle="270"
+	        android:startColor="#fffffc"
+	        android:centerColor="#f8fbf8"
+	        android:endColor="#f8fbf8"
+	        android:type="linear"
+	        android:centerX="0.5"
+	        android:centerY="0.5"
+	    />
+	</shape>
+    </item>
+
+</selector>
