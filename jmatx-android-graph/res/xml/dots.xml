@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/keyboard_backcolor"
+    android:keyTextColor="#FFFF0000"
+    android:horizontalGap="1%p"
+    android:keyHeight="7%p"
+    android:keyWidth="6%p"
+   	android:verticalGap="1%p"
+    >
+
+
+	<Row> 
+       <Key android:keyLabel=".!" android:keyOutputText=".!" android:keyEdgeFlags="left"/>
+       <Key android:keyLabel=".!=" android:keyOutputText=".!=" />
+       <Key android:keyLabel=".~" android:keyOutputText=".!=" />
+       <Key android:keyLabel=".^" android:keyOutputText=".!=" android:keyEdgeFlags="right"/>
+	</Row>
+	<Row> 
+       <Key android:keyLabel=".&lt;" android:keyOutputText=".&lt;" android:keyEdgeFlags="left"/>
+       <Key android:keyLabel=".&lt;=" android:keyOutputText=".&lt;=" />
+       <Key android:keyLabel=".==" android:keyOutputText=".==" />
+       <Key android:keyLabel=".>" android:keyOutputText=".>" />
+       <Key android:keyLabel=".>=" android:keyOutputText=".>=" android:keyEdgeFlags="right"/>
+	</Row>
+		<Row> 
+       <Key android:keyLabel=".+" android:keyOutputText=".+" android:keyEdgeFlags="left"/>
+       <Key android:keyLabel=".-" android:keyOutputText=".-" />
+       <Key android:keyLabel=".*" android:keyOutputText=".*" />
+       <Key android:keyLabel="./" android:keyOutputText="./" />
+       <Key android:keyLabel=".\\" android:keyOutputText=".\\" android:keyEdgeFlags="right"/>
+	</Row>
+	
+</Keyboard>

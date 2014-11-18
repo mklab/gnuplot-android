@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    	<!-- テーマの設定 -->
+    <style name="CalcTheme" parent="@android:style/Theme.Light">
+	<!-- <item name="android:panelBackground">@color/menucolor</item>
+		<item name="android:panelFullBackground">@color/menucolor</item> -->
+    </style>
+
+    <!-- 基本ボタン-->
+
+    <!-- M+ M- CM RM ボタン -->
+    <style name="memory_design_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_basic</item>
+		<item name="android:textColor">#007bbb</item>
+        <item name="android:layout_margin">2sp</item>
+        <item name="android:padding">2sp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+	<!-- C CE CA の配色 -->
+    <style name="ca_design_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_ca</item>
+		<item name="android:textColor">#ffffff</item>
+        <item name="android:layout_margin">2sp</item>
+        <item name="android:padding">2sp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <!-- large_基本ボタン-->
+    <style name="large_default_design_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_basic_large</item>
+		<item name="android:textColor">#444444</item>
+        <item name="android:layout_margin">2sp</item>
+        <item name="android:padding">2sp</item>
+        <item name="android:textSize">35sp</item>
+    </style>
+    <!-- large_M+ M- CM RM ボタン -->
+    <style name="large_memory_design_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_basic_large</item>
+		<item name="android:textColor">#007bbb</item>
+        <item name="android:layout_margin">2sp</item>
+        <item name="android:padding">2sp</item>
+        <item name="android:textSize">35sp</item>
+    </style>
+	<!-- large_C CE CA の配色 -->
+    <style name="large_ca_design_button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_ca_large</item>
+		<item name="android:textColor">#ffffff</item>
+        <item name="android:layout_margin">2sp</item>
+        <item name="android:padding">2sp</item>
+        <item name="android:textSize">35sp</item>
+    </style>
+
+
+</resources>

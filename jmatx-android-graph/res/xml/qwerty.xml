@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/* 
+**
+** Copyright 2008, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License"); 
+** you may not use this file except in compliance with the License. 
+** You may obtain a copy of the License at 
+**
+**     http://www.apache.org/licenses/LICENSE-2.0 
+**
+** Unless required by applicable law or agreed to in writing, software 
+** distributed under the License is distributed on an "AS IS" BASIS, 
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+** See the License for the specific language governing permissions and 
+** limitations under the License.
+*/
+-->
+
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFF0000"
+    android:imeOptions="flagNoExtractUi"
+    android:screenOrientation="landscape" >
+
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyEdgeFlags="left"
+            android:keyLabel="1"
+            android:keyOutputText="1"
+            android:popupCharacters="!"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="2"
+            android:keyOutputText="2"
+            android:popupCharacters="\@"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="3"
+            android:keyOutputText="3"
+            android:popupCharacters="#"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="4"
+            android:keyOutputText="4"
+            android:popupCharacters="$"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="5"
+            android:keyOutputText="5"
+            android:popupCharacters="%"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="6"
+            android:keyOutputText="6"
+            android:popupCharacters="^"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="7"
+            android:keyOutputText="7"
+            android:popupCharacters="&amp;"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="8"
+            android:keyOutputText="8"
+            android:popupCharacters="*"
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyLabel="9"
+            android:keyOutputText="9"
+            android:popupCharacters="("
+            android:popupKeyboard="@xml/popup_template" />
+        <Key
+            android:keyEdgeFlags="right"
+            android:keyLabel="0"
+            android:keyOutputText="0"
+            android:popupCharacters=")"
+            android:popupKeyboard="@xml/popup_template" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyEdgeFlags="left"
+            android:keyLabel="&quot;&quot;"
+            android:keyOutputText="&quot;&quot;" />
+        <Key
+            android:keyLabel="^"
+            android:keyOutputText="^" />
+        <Key
+            android:keyLabel="/"
+            android:keyOutputText="/" />
+        <Key
+            android:keyLabel="*"
+            android:keyOutputText="*" />
+        <Key
+            android:keyLabel="-"
+            android:keyOutputText="-" />
+        <Key
+            android:keyLabel="+"
+            android:keyOutputText="+" />
+        <Key
+            android:keyLabel="( )"
+            android:keyOutputText="()"
+            android:popupKeyboard="@xml/parentheses" />
+        <Key
+            android:keyLabel="{ }"
+            android:keyOutputText="{}"
+            android:popupKeyboard="@xml/parentheses" />
+        <Key
+            android:keyLabel="[ ]"
+            android:keyOutputText="[]"
+            android:popupKeyboard="@xml/parentheses" />
+        <Key
+            android:keyEdgeFlags="right"
+            android:keyLabel="="
+            android:keyOutputText="=" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyEdgeFlags="left"
+            android:keyLabel="q"
+            android:keyOutputText="q" />
+        <Key
+            android:keyLabel="w"
+            android:keyOutputText="w" />
+        <Key
+            android:keyLabel="e"
+            android:keyOutputText="e" />
+        <Key
+            android:keyLabel="r"
+            android:keyOutputText="r" />
+        <Key
+            android:keyLabel="t"
+            android:keyOutputText="t" />
+        <Key
+            android:keyLabel="y"
+            android:keyOutputText="y" />
+        <Key
+            android:keyLabel="u"
+            android:keyOutputText="u" />
+        <Key
+            android:keyLabel="i"
+            android:keyOutputText="i" />
+        <Key
+            android:keyLabel="o"
+            android:keyOutputText="o" />
+        <Key
+            android:keyEdgeFlags="right"
+            android:keyLabel="p"
+            android:keyOutputText="p" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:horizontalGap="2%p"
+            android:keyEdgeFlags="left"
+            android:keyLabel="a"
+            android:keyOutputText="a" />
+        <Key
+            android:keyLabel="s"
+            android:keyOutputText="s" />
+        <Key
+            android:keyLabel="d"
+            android:keyOutputText="d" />
+        <Key
+            android:keyLabel="f"
+            android:keyOutputText="f" />
+        <Key
+            android:keyLabel="g"
+            android:keyOutputText="g" />
+        <Key
+            android:keyLabel="h"
+            android:keyOutputText="h" />
+        <Key
+            android:keyLabel="j"
+            android:keyOutputText="j" />
+        <Key
+            android:keyLabel="k"
+            android:keyOutputText="k" />
+        <Key
+            android:keyLabel="l"
+            android:keyOutputText="l" />
+        <Key
+            android:codes="67"
+            android:isRepeatable="true"
+            android:keyEdgeFlags="right"
+            android:keyIcon="@drawable/sym_keyboard_delete"
+            android:keyWidth="8%p" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:horizontalGap="4%p"
+            android:keyEdgeFlags="left"
+            android:keyLabel="z"
+            android:keyOutputText="z" />
+        <Key
+            android:keyLabel="x"
+            android:keyOutputText="x" />
+        <Key
+            android:keyLabel="c"
+            android:keyOutputText="c" />
+        <Key
+            android:keyLabel="v"
+            android:keyOutputText="v" />
+        <Key
+            android:keyLabel="b"
+            android:keyOutputText="b" />
+        <Key
+            android:keyLabel="n"
+            android:keyOutputText="n" />
+        <Key
+            android:keyLabel="m"
+            android:keyOutputText="m" />
+        <Key
+            android:codes="-3"
+            android:keyLabel="↑"
+            android:keyWidth="6%p" />
+        <Key
+            android:keyLabel=";"
+            android:keyOutputText=";"
+            android:keyWidth="6%p" />
+        <Key
+            android:codes="66"
+            android:horizontalGap="1.5%p"
+            android:keyHeight="15%p"
+            android:keyIcon="@drawable/sym_keyboard_return"
+            android:keyWidth="11.5%p"
+            android:verticalGap="1.5%p" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="7%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:codes="-169"
+            android:isModifier="true"
+            android:isSticky="false"
+            android:keyEdgeFlags="left"
+            android:keyIcon="@drawable/sym_keyboard_shift"
+            android:keyWidth="10%p" />
+        <Key
+            android:codes="-144"
+            android:keyLabel="syms"
+            android:keyWidth="15%p" />
+        <Key
+            android:codes="62"
+            android:isRepeatable="true"
+            android:keyIcon="@drawable/sym_keyboard_space"
+            android:keyWidth="31%p" />
+        <Key
+            android:keyLabel=","
+            android:keyOutputText=","
+            android:keyWidth="4%p" />
+        <Key
+            android:keyLabel="."
+            android:keyOutputText="."
+            android:keyWidth="4%p"
+            android:popupKeyboard="@xml/dots" />
+        <Key
+            android:codes="-1"
+            android:isRepeatable="true"
+            android:keyLabel="←"
+            android:keyWidth="6%p" />
+        <Key
+            android:codes="-4"
+            android:keyLabel="↓"
+            android:keyWidth="6%p" />
+        <Key
+            android:codes="-2"
+            android:isRepeatable="true"
+            android:keyLabel="→"
+            android:keyWidth="6%p"
+            android:verticalGap="5%p" />
+    </Row>
+
+</Keyboard>

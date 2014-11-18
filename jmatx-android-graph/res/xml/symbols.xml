@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/* 
+**
+** Copyright 2008, The Android Open Source Project
+**
+** Licensed under the Apache License, Version 2.0 (the "License"); 
+** you may not use this file except in compliance with the License. 
+** You may obtain a copy of the License at 
+**
+**     http://www.apache.org/licenses/LICENSE-2.0 
+**
+** Unless required by applicable law or agreed to in writing, software 
+** distributed under the License is distributed on an "AS IS" BASIS, 
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+** See the License for the specific language governing permissions and 
+** limitations under the License.
+*/
+-->
+
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/keyboard_backcolor"
+    android:keyTextColor="#FFFF0000" >
+
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="8.5%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyLabel="!"
+            android:keyOutputText="!" />
+        <Key
+            android:keyLabel="\@"
+            android:keyOutputText="\@" />
+        <Key
+            android:keyLabel="#"
+            android:keyOutputText="#" />
+        <Key
+            android:keyLabel="( )"
+            android:keyOutputText="()" />
+        <Key
+            android:horizontalGap="21%p"
+            android:keyLabel="="
+            android:keyOutputText="=" />
+        <Key
+            android:keyLabel="/"
+            android:keyOutputText="/" />
+        <Key
+            android:keyLabel="*"
+            android:keyOutputText="*" />
+        <Key
+            android:codes="67"
+            android:isRepeatable="true"
+            android:keyEdgeFlags="right"
+            android:keyIcon="@drawable/sym_keyboard_delete" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="8.5%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyLabel="$"
+            android:keyOutputText="$" />
+        <Key
+            android:keyLabel="%"
+            android:keyOutputText="%" />
+        <Key
+            android:keyLabel="^"
+            android:keyOutputText="^" />
+        <Key
+            android:keyLabel="{ }"
+            android:keyOutputText="{}" />
+        <Key
+            android:horizontalGap="21%p"
+            android:keyLabel="7"
+            android:keyOutputText="7" />
+        <Key
+            android:keyLabel="8"
+            android:keyOutputText="8" />
+        <Key
+            android:keyLabel="9"
+            android:keyOutputText="9" />
+        <Key
+            android:keyLabel="-"
+            android:keyOutputText="-" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="8.5%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyLabel=":"
+            android:keyOutputText=":" />
+        <Key
+            android:keyLabel=";"
+            android:keyOutputText=";" />
+        <Key
+            android:keyLabel="&quot; &quot;"
+            android:keyOutputText="&quot;&quot;" />
+        <Key
+            android:keyLabel="[ ]"
+            android:keyOutputText="[]" />
+        <Key
+            android:horizontalGap="21%p"
+            android:keyLabel="4"
+            android:keyOutputText="4" />
+        <Key
+            android:keyLabel="5"
+            android:keyOutputText="5" />
+        <Key
+            android:keyLabel="6"
+            android:keyOutputText="6" />
+        <Key
+            android:keyLabel="+"
+            android:keyOutputText="+" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="8.5%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:keyLabel="e"
+            android:keyOutputText="e" />
+        <Key
+            android:keyLabel="PI"
+            android:keyOutputText="PI" />
+        <Key
+            android:keyLabel="&lt;"
+            android:keyOutputText="&lt;" />
+        <Key
+            android:keyLabel=">"
+            android:keyOutputText=">" />
+        <Key
+            android:codes="-3"
+            android:horizontalGap="8%p"
+            android:keyLabel="↑"
+            android:keyWidth="5%p" />
+        <Key
+            android:horizontalGap="8%p"
+            android:keyLabel="1"
+            android:keyOutputText="1" />
+        <Key
+            android:keyLabel="2"
+            android:keyOutputText="2" />
+        <Key
+            android:keyLabel="3"
+            android:keyOutputText="3" />
+        <Key
+            android:codes="66"
+            android:keyHeight="17.5%p"
+            android:keyIcon="@drawable/sym_keyboard_return"
+            android:keyWidth="9.4%p"
+            android:verticalGap="1.5%p" />
+    </Row>
+    <Row
+        android:horizontalGap="0.5%p"
+        android:keyHeight="8.5%p"
+        android:keyWidth="9.4%p"
+        android:verticalGap="0.5%p" >
+        <Key
+            android:codes="-144"
+            android:keyLabel="syms"
+            android:keyWidth="10%p" />
+        <Key
+            android:codes="-121"
+            android:keyLabel="a b c"
+            android:keyWidth="15%p" />
+        <Key
+            android:codes="62"
+            android:isRepeatable="true"
+            android:keyIcon="@drawable/sym_keyboard_space"
+            android:keyWidth="13.1%p" />
+        <Key
+            android:codes="-1"
+            android:horizontalGap="2.5%p"
+            android:isRepeatable="true"
+            android:keyLabel="←"
+            android:keyWidth="5%p" />
+        <Key
+            android:codes="-4"
+            android:keyLabel="↓"
+            android:keyWidth="5%p" />
+        <Key
+            android:codes="-2"
+            android:isRepeatable="true"
+            android:keyLabel="→"
+            android:keyWidth="5%p"
+            android:verticalGap="5%p" />
+        <Key
+            android:horizontalGap="2.5%p"
+            android:keyLabel="0"
+            android:keyOutputText="0" />
+        <Key
+            android:keyLabel=","
+            android:keyOutputText="," />
+        <Key
+            android:keyLabel="."
+            android:keyOutputText="." />
+    </Row>
+
+</Keyboard>
