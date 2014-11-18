@@ -1,8 +1,11 @@
 package org.mklab.matx.android.graph;
 
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mklab.matx.android.graph.session.TermSession;
+import org.mklab.matx.android.keyboard.CustomEditTextFunction;
 import org.mklab.matx.android.keyboard.KeyboardListner;
 import org.mklab.matx.android.keyboard.MyKeyboard;
 
@@ -17,16 +20,20 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Typeface;
+import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -63,6 +70,8 @@ public class MainActivity extends Activity implements KeyboardListner {
 	private TermSession mTermSession;
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
+
+	List<EditText> editTextList = new ArrayList<EditText>();
 
 	/** Called when the activity is first created. */
 	@Override
@@ -673,11 +682,71 @@ public class MainActivity extends Activity implements KeyboardListner {
 	public void sendKeyDown(int key_code) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code);
+		CustomEditTextFunction.sendKeyCode(this.editTextList.get(0), key_code);
 	}
 
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText);
+
+		CustomEditTextFunction.insertText(this.editTextList.get(0), inputText);
+	}
+
+	private void setEditText(EditText editText) {
+		this.editTextList.add(editText);
+		hideKeyboard(this.editTextList, this);
+	}
+
+	/**
+	 * 指定されたEditテキストがタッチされてもキーボードが起動しないようにします
+	 * 
+	 * @param editTexts
+	 * @param activity
+	 */
+	public void hideKeyboard(List<EditText> editTexts, Activity activity) {
+		System.out.println("hideKeyboard"); //$NON-NLS-1$
+		InputMethodManager inputMethodManager = (InputMethodManager) activity
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		for (final EditText editText : editTexts) {
+			inputMethodManager.hideSoftInputFromWindow(
+					editText.getWindowToken(),
+					InputMethodManager.HIDE_NOT_ALWAYS);
+			// editテキストがタッチされた時の挙動
+			editText.setOnTouchListener(new View.OnTouchListener() {
+				public boolean onTouch(View v, MotionEvent event) {
+					v.onTouchEvent(event);
+					InputMethodManager imm = (InputMethodManager) v
+							.getContext().getSystemService(
+									Context.INPUT_METHOD_SERVICE);
+					Log.d("KEYBOARD", "VISIBLE"); //$NON-NLS-1$ //$NON-NLS-2$
+					if (imm != null) {
+						imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+					}
+					MainActivity.this.myKeyboard.setVisibility(View.VISIBLE);
+					if (!editText.hasFocus()) {
+						switch (editText.getInputType()) {
+						case InputType.TYPE_CLASS_NUMBER:
+							MainActivity.this.myKeyboard
+									.setKeyboard(new Keyboard(
+											MainActivity.this, R.xml.symbols));
+							break;
+						case InputType.TYPE_CLASS_TEXT:
+							MainActivity.this.myKeyboard
+									.setKeyboard(new Keyboard(
+											MainActivity.this, R.xml.qwerty));
+							break;
+						default:
+							MainActivity.this.myKeyboard
+									.setKeyboard(new Keyboard(
+											MainActivity.this, R.xml.qwerty));
+
+							break;
+						}
+					}
+					return true;
+				}
+			});
+		}
 	}
 
 }
