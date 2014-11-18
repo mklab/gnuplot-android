@@ -163,17 +163,17 @@
         android:verticalGap="0.5%p" >
         <Key
             android:codes="-144"
-            android:keyLabel="syms"
+           android:keyIcon="@drawable/sym_keyboard_shift"
             android:keyWidth="10%p" />
         <Key
             android:codes="-121"
-            android:keyLabel="a b c"
-            android:keyWidth="15%p" />
+            android:keyLabel="abc"
+            android:keyWidth="18.7%p" />
         <Key
             android:codes="62"
             android:isRepeatable="true"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:keyWidth="13.1%p" />
+         />
         <Key
             android:codes="-1"
             android:horizontalGap="2.5%p"

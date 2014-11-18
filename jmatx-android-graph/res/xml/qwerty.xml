@@ -260,12 +260,12 @@
         <Key
             android:codes="-144"
             android:keyLabel="syms"
-            android:keyWidth="15%p" />
+            android:keyWidth="30%p" />
         <Key
             android:codes="62"
             android:isRepeatable="true"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:keyWidth="31%p" />
+            android:keyWidth="16%p" />
         <Key
             android:keyLabel=","
             android:keyOutputText=","
