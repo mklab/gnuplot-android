@@ -684,9 +684,9 @@ public class MainActivity extends Activity implements KeyboardListner {
 			MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
 			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
 
+		}else{
+			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0), key_code);			
 		}
-
-		CustomEditTextFunction.sendKeyCode(this.editTextList.get(0), key_code);
 	}
 
 	public void sendInputText(String inputText) {
