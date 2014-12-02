@@ -18,13 +18,27 @@
             android:fillViewport="true"
             android:scrollbars="vertical" >
 
-            <TextView
-                android:id="@+id/termWindow"
+            <LinearLayout
+                android:id="@+id/LinearLayout01"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:maxLines="200"
-                android:textSize="16sp" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/termWindow"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:maxLines="200"
+                    android:textSize="16sp" />
+
+                <org.mklab.matx.android.customView.PredictiveView
+                    android:id="@+id/CustomView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+            </LinearLayout>
         </ScrollView>
 
         <LinearLayout
