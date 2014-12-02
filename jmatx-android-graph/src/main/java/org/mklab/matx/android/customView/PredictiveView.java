@@ -293,7 +293,7 @@ public class PredictiveView extends View {
 						this.getLastCursorPoint());
 			}
 			if (!this.predictionVariable.equals("")) { //$NON-NLS-1$
-				this.lisner.addvariable(this.predictionVariable,
+				this.lisner.addVariable(this.predictionVariable,
 						this.getLastCursorPoint());
 			}
 			this.predictionFunction = ""; //$NON-NLS-1$

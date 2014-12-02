@@ -21,7 +21,7 @@ public interface AddPredictionMessage {
 	 * @param var 変数
 	 *            
 	 */
-	public  void addvariable(String var,int count);
+	public  void addVariable(String var,int count);
 
 	
 	/**

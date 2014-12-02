@@ -4,6 +4,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mklab.matx.android.customView.AddPredictionMessage;
+import org.mklab.matx.android.customView.PredictiveView;
 import org.mklab.matx.android.graph.session.TermSession;
 import org.mklab.matx.android.keyboard.CustomEditTextFunction;
 import org.mklab.matx.android.keyboard.KeyboardListner;
@@ -22,14 +24,15 @@ import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -40,7 +43,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-public class MainActivity extends Activity implements KeyboardListner {
+public class MainActivity extends Activity implements KeyboardListner,
+		AddPredictionMessage {
 	DemoView demoview = null;
 	private Canvas _canvas = null;
 	private Bitmap _bitmap = null;
@@ -54,8 +58,9 @@ public class MainActivity extends Activity implements KeyboardListner {
 	private LinearLayout mPlotLayout;
 	private ViewSwitcher mSwitcher;
 	public TextView mTextView;
+	public TextView promptTextView;
 	public ScrollView mScrollView;
-	public EditText mCmdEditText;
+	public EditText editText;
 	private String textViewString = ""; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
 	private int _linetype;
@@ -70,8 +75,18 @@ public class MainActivity extends Activity implements KeyboardListner {
 	private TermSession mTermSession;
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
+	private PredictiveView predictionView;
+	float fontSize = 20;
 
 	List<EditText> editTextList = new ArrayList<EditText>();
+	private int predictionStrCount;
+	private int inputCount;
+	static List<String> predictionVariableList = new ArrayList<String>();
+	static List<String> predictionFunctionList = new ArrayList<String>();
+	static List<String> predictionMaTXFunctionList = new ArrayList<String>();
+	static List<String> variableNameList = new ArrayList<String>();
+	private List<String> methodNameList = new ArrayList<String>();
+	private int prefontsize = 15;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -86,10 +101,18 @@ public class MainActivity extends Activity implements KeyboardListner {
 
 		this.mScrollView = (ScrollView) findViewById(R.id.scrollView);
 
-		this.mCmdEditText = (EditText) findViewById(R.id.edit_command);
+		this.editText = (EditText) findViewById(R.id.edit_command);
 
 		this.mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
 
+		this.promptTextView = (TextView) findViewById(R.id.prompt);
+
+		predictionView = (PredictiveView) findViewById(R.id.CustomView);
+		predictionView.setSize(0, 0);
+		predictionView.setContext(this);
+		predictionView.setfontsize(this.fontSize);
+
+		methodNameLoader();
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -204,7 +227,7 @@ public class MainActivity extends Activity implements KeyboardListner {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		this.myKeyboard = (MyKeyboard) findViewById(R.id.myKeyboard);
 		this.myKeyboard.setKeyboardLisner(this);
-		setEditText(this.mCmdEditText);
+		setEditText(this.editText);
 	}
 
 	public void scrollToBottom() {
@@ -679,20 +702,51 @@ public class MainActivity extends Activity implements KeyboardListner {
 
 		if ((key_code == KeyEvent.KEYCODE_ENTER)
 				&& (MainActivity.this._ready == true)) {
-			String command = MainActivity.this.mCmdEditText.getText()
-					.toString();
-			MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
+			String command = MainActivity.this.editText.getText().toString();
+			MainActivity.this.editText.setText(""); //$NON-NLS-1$
 			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
 
-		}else{
-			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0), key_code);			
+		} else {
+			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0),
+					key_code);
 		}
 	}
 
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText);
+
+		Log.d("CONSOLE", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
 		CustomEditTextFunction.insertText(this.editTextList.get(0), inputText);
+		if (predictionView.getLastCursorPoint() + this.predictionStrCount != editText
+				.getSelectionEnd()) {
+			resetPrediction();
+		}
+		if (inputText.equals("")) { //$NON-NLS-1$
+			resetPrediction();
+			return;
+		}
+
+		predictionView.clear();
+		this.inputCount = inputText.length();
+
+		if (inputText.length() > 1 || this.symbols.indexOf(inputText) > 0
+				|| editText.getText().toString().isEmpty()) {
+			resetPrediction();
+		} else {
+			this.predictionStrCount += 1;
+			System.out.println(this.predictionStrCount);
+			String pre = editText
+					.getText()
+					.toString()
+					.substring(
+							predictionView.getLastCursorPoint(),
+							this.predictionStrCount
+									+ predictionView.getLastCursorPoint());
+			System.out.println(pre);
+			prediction(pre);
+		}
+		setPrediction();
 	}
 
 	private void setEditText(EditText editText) {
@@ -701,7 +755,7 @@ public class MainActivity extends Activity implements KeyboardListner {
 	}
 
 	/**
-	 * 指定されたEditテキストがタッチされてもキーボードが起動しないようにします
+	 * 謖�螳壹＆繧後◆Edit繝�繧ｭ繧ｹ繝医′繧ｿ繝�繝√＆繧後※繧ゅく繝ｼ繝懊�ｼ繝峨′襍ｷ蜍輔＠縺ｪ縺�繧医≧縺ｫ縺励∪縺�
 	 * 
 	 * @param editTexts
 	 * @param activity
@@ -714,7 +768,7 @@ public class MainActivity extends Activity implements KeyboardListner {
 			inputMethodManager.hideSoftInputFromWindow(
 					editText.getWindowToken(),
 					InputMethodManager.HIDE_NOT_ALWAYS);
-			// editテキストがタッチされた時の挙動
+			// edit繝�繧ｭ繧ｹ繝医′繧ｿ繝�繝√＆繧後◆譎ゅ�ｮ謖吝虚
 			editText.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
 					v.onTouchEvent(event);
@@ -751,5 +805,153 @@ public class MainActivity extends Activity implements KeyboardListner {
 			});
 		}
 	}
+
+	public void addFunction(String function, int lastCursorPoint) {
+		String frontStr = editText
+				.getText()
+				.toString()
+				.substring(0,
+						predictionView.getLastCursorPoint());
+		String backStr = editText
+				.getText()
+				.toString()
+				.substring(editText.getSelectionEnd(),
+						editText.getText().toString().length());
+		editText.setText(frontStr + function + "()" + backStr); //$NON-NLS-1$
+		editText.setSelection(lastCursorPoint + function.length() + 1);
+		resetPrediction();
+	}
+
+	public void addVariable(String var, int lastCursorPoint) {
+		String frontStr = editText
+				.getText()
+				.toString()
+				.substring(0,
+						predictionView.getLastCursorPoint());
+		String backStr = editText
+				.getText()
+				.toString()
+				.substring(editText.getSelectionEnd(),
+						editText.getText().toString().length());
+		editText.setText(frontStr + var + backStr);
+		editText.setSelection(lastCursorPoint + var.length());
+		resetPrediction();
+	}
+
+	private void resetPrediction() {
+		predictionView.setLastCursorPoint(editText.getSelectionStart());
+		predictionView.clear();
+		this.predictionStrCount = 0;
+		prediction(""); //$NON-NLS-1$
+	}
+
+	public void cerateMessage(String message) {
+		editText.setText(message);
+		Editable result = editText.getText();
+		editText.setSelection(result.toString().length());
+		resetPrediction();
+	}
+
+	private void setPrediction() {
+		System.out.println("setPrediction"); //$NON-NLS-1$
+		predictionView.setUpdateFunctiuonList(predictionFunctionList);
+		predictionView.setUpdateMaTXFunctionList(predictionMaTXFunctionList);
+		predictionView.setUpdateVariableList(predictionVariableList);
+		predictionView.setfontsize(mTextView.getTextSize() * 0.9f);
+		predictionView.setCount(this.inputCount);
+		// ビューを意図的に更新する
+		promptTextView.setText(promptTextView.getText().toString());
+	}
+
+
+	private void prediction(String input) {
+		System.out.println("prediction"); //$NON-NLS-1$
+		predictionVariableList.clear();
+		predictionFunctionList.clear();
+		predictionMaTXFunctionList.clear();
+		int predictionCount = 0;
+		int left = 0;
+		int top = 0;
+		String lastMethod = ""; //$NON-NLS-1$
+		// ウィンドウマネージャのインスタンス取得
+		WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+		// ディスプレイのインスタンス生成
+		Display disp = wm.getDefaultDisplay();
+
+		float widthSize = disp.getWidth();
+		if (!input.equals("")) { //$NON-NLS-1$
+
+			for (final String c : methodNameList) {
+				if (c.startsWith(input)) {
+					predictionFunctionList.add(c);
+					int leftSize = c.length() * (int) this.prefontsize;
+					// 二段目に移動させる
+					if ((left + leftSize) > widthSize) {
+						top += 1;
+						left = 0;
+					}
+					left += leftSize;
+					predictionCount += 1;
+				}
+			}
+		}
+		if (predictionCount > 0) {
+			predictionView
+					.setSize((int) widthSize,
+							(int) (mTextView.getTextSize()
+									* (top + 2) * 1.1));
+		} else {
+			predictionView.setSize(0, 0);
+		}
+	}
+
+	private void methodNameLoader() {
+		methodNameList.add("sin");
+		methodNameList.add("cos");
+		methodNameList.add("tan");
+	}
+	
+	private List<String> symbols = new ArrayList<String>(38) {
+		{
+			add(" "); //$NON-NLS-1$
+			add("\""); //$NON-NLS-1$
+			add("!"); //$NON-NLS-1$
+			add("#"); //$NON-NLS-1$
+			add("$"); //$NON-NLS-1$
+			add("%"); //$NON-NLS-1$
+			add("&"); //$NON-NLS-1$
+			add("'"); //$NON-NLS-1$
+			add("("); //$NON-NLS-1$
+			add(")"); //$NON-NLS-1$
+			add("="); //$NON-NLS-1$
+			add("~"); //$NON-NLS-1$
+			add("^"); //$NON-NLS-1$
+			add("+"); //$NON-NLS-1$
+			add("-"); //$NON-NLS-1$
+			add("|"); //$NON-NLS-1$
+			add("\\"); //$NON-NLS-1$
+			add("{"); //$NON-NLS-1$
+			add("}"); //$NON-NLS-1$
+			add("["); //$NON-NLS-1$
+			add("]"); //$NON-NLS-1$
+			add("*"); //$NON-NLS-1$
+			add("/"); //$NON-NLS-1$
+			add(";"); //$NON-NLS-1$
+			add(":"); //$NON-NLS-1$
+			add("."); //$NON-NLS-1$
+			add(","); //$NON-NLS-1$
+			add("?"); //$NON-NLS-1$
+			add("1"); //$NON-NLS-1$
+			add("2"); //$NON-NLS-1$
+			add("3"); //$NON-NLS-1$
+			add("4"); //$NON-NLS-1$
+			add("5"); //$NON-NLS-1$
+			add("6"); //$NON-NLS-1$
+			add("7"); //$NON-NLS-1$
+			add("8"); //$NON-NLS-1$
+			add("9"); //$NON-NLS-1$
+			add("0"); //$NON-NLS-1$
+		}
+	};
 
 }
