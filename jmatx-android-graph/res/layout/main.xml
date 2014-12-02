@@ -19,7 +19,7 @@
             android:scrollbars="vertical" >
 
             <LinearLayout
-                android:id="@+id/LinearLayout01"
+                android:id="@+id/LinearLayout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -31,39 +31,51 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
+                    android:background="#000000"
                     android:maxLines="200"
                     android:textSize="16sp" />
 
-                <org.mklab.matx.android.customView.PredictiveView
-                    android:id="@+id/CustomView"
+                <LinearLayout
+                    android:id="@+id/LinearLayout01"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" />
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="vertical" >
+
+                    <org.mklab.matx.android.customView.PredictiveView
+                        android:id="@+id/CustomView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/prompt"
+                            android:layout_width="40sp"
+                            android:layout_height="wrap_content"
+                            android:background="#000000"
+                            android:text=">> "
+                            android:textSize="16sp" />
+
+                        <EditText
+                            android:id="@+id/edit_command"
+                            style="?android:attr/textViewStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="#000000"
+                            android:textColor="@null"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/prompt"
-                android:layout_width="40sp"
-                android:layout_height="wrap_content"
-                android:text=">> "
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/edit_command"
-                style="?android:attr/textViewStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:textColor="@null"
-                android:textSize="16sp" />
-        </LinearLayout>
 
         <org.mklab.matx.android.keyboard.MyKeyboard
             android:id="@+id/myKeyboard"

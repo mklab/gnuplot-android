@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.promptTextView = (TextView) findViewById(R.id.prompt);
 
 		predictionView = (PredictiveView) findViewById(R.id.CustomView);
-		predictionView.setSize(0, 0);
+		predictionView.setSize(300, 300);
 		predictionView.setContext(this);
 		predictionView.setfontsize(this.fontSize);
 
@@ -899,6 +899,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 		} else {
 			predictionView.setSize(0, 0);
 		}
+		System.out.println(predictionCount);
+		System.out.println((int) widthSize + "  " + 
+				(int) (mTextView.getTextSize() * (top + 2) * 1.1));
+		System.out.println(predictionFunctionList);
 	}
 
 	private void methodNameLoader() {

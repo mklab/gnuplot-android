@@ -57,6 +57,7 @@ public class PredictiveView extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		System.out.println("onMeasure");
 		// Viewの描画サイズを指定する
 		setMeasuredDimension(this.width, this.height);
 	}
@@ -68,6 +69,8 @@ public class PredictiveView extends View {
 	 * @param height
 	 */
 	public void setSize(int width, int height) {
+		System.out.println("setSize");
+		System.out.println(width   + " " + height);
 		this.width = width;
 		this.height = height;
 		setMeasuredDimension(this.width, this.height);
@@ -99,6 +102,8 @@ public class PredictiveView extends View {
 	 */
 	public void setUpdateMaTXFunctionList(List<String> predictionList) {
 		this.predictionMaTXFunctionList = predictionList;
+		System.out.println("setUpdateMaTXFunctionList");
+		System.out.println(this.predictionMaTXFunction);
 	}
 
 	/**
@@ -160,6 +165,7 @@ public class PredictiveView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		System.out.println("onCanvas");
 		canvas.drawColor(0, Mode.CLEAR);
 		canvas.drawColor(Color.BLACK);
 
