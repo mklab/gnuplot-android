@@ -716,8 +716,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText);
 
-		Log.d("CONSOLE", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
-		CustomEditTextFunction.insertText(this.editTextList.get(0), inputText);
 		if (predictionView.getLastCursorPoint() + this.predictionStrCount != editText
 				.getSelectionEnd()) {
 			resetPrediction();
@@ -729,13 +727,20 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		predictionView.clear();
 		this.inputCount = inputText.length();
-
+		Log.d("CONSOLE", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
+		if (!inputText.equals("\n")) {
+			CustomEditTextFunction.insertText(this.editTextList.get(0),
+					inputText);
+		}
 		if (inputText.length() > 1 || this.symbols.indexOf(inputText) > 0
 				|| editText.getText().toString().isEmpty()) {
 			resetPrediction();
 		} else {
 			this.predictionStrCount += 1;
 			System.out.println(this.predictionStrCount);
+			System.out.println(editText.getText().toString() + "   "
+					+ predictionView.getLastCursorPoint() + "  "
+					+ this.predictionStrCount);
 			String pre = editText
 					.getText()
 					.toString()
@@ -755,7 +760,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	/**
-	 * 謖�螳壹＆繧後◆Edit繝�繧ｭ繧ｹ繝医′繧ｿ繝�繝√＆繧後※繧ゅく繝ｼ繝懊�ｼ繝峨′襍ｷ蜍輔＠縺ｪ縺�繧医≧縺ｫ縺励∪縺�
+	 * デフォルトのキーボードを隠します
 	 * 
 	 * @param editTexts
 	 * @param activity
@@ -768,7 +773,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 			inputMethodManager.hideSoftInputFromWindow(
 					editText.getWindowToken(),
 					InputMethodManager.HIDE_NOT_ALWAYS);
-			// edit繝�繧ｭ繧ｹ繝医′繧ｿ繝�繝√＆繧後◆譎ゅ�ｮ謖吝虚
 			editText.setOnTouchListener(new View.OnTouchListener() {
 				public boolean onTouch(View v, MotionEvent event) {
 					v.onTouchEvent(event);
@@ -807,11 +811,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	public void addFunction(String function, int lastCursorPoint) {
-		String frontStr = editText
-				.getText()
-				.toString()
-				.substring(0,
-						predictionView.getLastCursorPoint());
+		String frontStr = editText.getText().toString()
+				.substring(0, predictionView.getLastCursorPoint());
 		String backStr = editText
 				.getText()
 				.toString()
@@ -823,11 +824,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	public void addVariable(String var, int lastCursorPoint) {
-		String frontStr = editText
-				.getText()
-				.toString()
-				.substring(0,
-						predictionView.getLastCursorPoint());
+		String frontStr = editText.getText().toString()
+				.substring(0, predictionView.getLastCursorPoint());
 		String backStr = editText
 				.getText()
 				.toString()
@@ -839,6 +837,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private void resetPrediction() {
+		System.out.println("reset  " + editText.getSelectionStart());
 		predictionView.setLastCursorPoint(editText.getSelectionStart());
 		predictionView.clear();
 		this.predictionStrCount = 0;
@@ -862,7 +861,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// ビューを意図的に更新する
 		promptTextView.setText(promptTextView.getText().toString());
 	}
-
 
 	private void prediction(String input) {
 		System.out.println("prediction"); //$NON-NLS-1$
@@ -896,10 +894,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 			}
 		}
 		if (predictionCount > 0) {
-			predictionView
-					.setSize((int) widthSize,
-							(int) (mTextView.getTextSize()
-									* (top + 2) * 1.1));
+			predictionView.setSize((int) widthSize,
+					(int) (mTextView.getTextSize() * (top + 2) * 1.1));
 		} else {
 			predictionView.setSize(0, 0);
 		}
@@ -909,8 +905,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 		methodNameList.add("sin");
 		methodNameList.add("cos");
 		methodNameList.add("tan");
+		resetPrediction();
 	}
-	
+
 	private List<String> symbols = new ArrayList<String>(38) {
 		{
 			add(" "); //$NON-NLS-1$
