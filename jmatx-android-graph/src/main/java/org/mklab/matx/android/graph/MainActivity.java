@@ -1,5 +1,7 @@
 package org.mklab.matx.android.graph;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -638,6 +641,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		resetPrediction();
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (this._plotDataPresent) {
 				if (this.mSwitcher.getDisplayedChild() != 1) {
@@ -906,9 +910,35 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private void methodNameLoader() {
-		methodNameList.add("sin");
-		methodNameList.add("cos");
-		methodNameList.add("tan");
+//		methodNameList.add("sin");
+//		methodNameList.add("cos");
+//		methodNameList.add("tan");
+		AssetManager as = getResources().getAssets();
+        InputStream st = null;
+        try {
+            st = as.open("functions.csv");
+            byte[] buffer = new byte[st.available()];
+            while ((st.read(buffer)) != -1) {
+            }
+            String s = new String(buffer);// この中にテキストの内容が入る
+            String[] temp = s.split("\n");
+            for (int i = 0; i < temp.length; i++) {
+ 
+                String[] temp2 = temp[i].split(",");
+                for (int j = 0; j < temp2.length; j++) {
+                	methodNameList.add(temp2[j]);
+                }
+ 
+            }
+ 
+        } catch (IOException e) {
+        } finally {
+            try {
+                st.close();
+            } catch (IOException e2) {
+            }
+        }
+        System.out.println("load " + methodNameList);
 		resetPrediction();
 	}
 
