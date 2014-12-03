@@ -12,7 +12,7 @@ public interface AddPredictionMessage {
 	 *            表示する関数
 	 * @param count
 	 */
-	public  void addFunction(String function, int count);
+	public  void addFunction(String function, int lastCursorPoint);
 	
 
 	/**
@@ -21,7 +21,15 @@ public interface AddPredictionMessage {
 	 * @param var 変数
 	 *            
 	 */
-	public  void addVariable(String var,int count);
+	public  void addVariable(String var,int lastCursorPoint);
+	
+	/**
+	 * コマンドを追加で入力する
+	 * 
+	 * @param command 変数
+	 *            
+	 */
+	public  void addCommand(String command,int lastCursorPoint);
 
 	
 	/**
@@ -31,6 +39,7 @@ public interface AddPredictionMessage {
 	 *            追加表示するメッセージ
 	 */
 	public  void cerateMessage(String message);
+
 
 
 

@@ -839,6 +839,22 @@ public class MainActivity extends Activity implements KeyboardListner,
 		editText.setSelection(lastCursorPoint + var.length());
 		resetPrediction();
 	}
+	
+	public void addCommand(String command, int lastCursorPoint) {
+		String frontStr = editText
+				.getText()
+				.toString()
+				.substring(0,
+						predictionView.getLastCursorPoint());
+		String backStr = editText
+				.getText()
+				.toString()
+				.substring(editText.getSelectionEnd(),
+						editText.getText().toString().length());
+		editText.setText(frontStr + command + " " + backStr);
+		editText.setSelection(lastCursorPoint + command.length() + 1);
+		resetPrediction();
+	}
 
 	private void resetPrediction() {
 		System.out.println("reset  " + editText.getSelectionStart());
