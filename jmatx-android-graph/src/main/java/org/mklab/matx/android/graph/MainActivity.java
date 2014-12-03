@@ -83,11 +83,12 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	List<EditText> editTextList = new ArrayList<EditText>();
 	private int predictionStrCount;
+	
 	private int inputCount;
-	static List<String> predictionVariableList = new ArrayList<String>();
-	static List<String> predictionFunctionList = new ArrayList<String>();
-	static List<String> predictionMaTXFunctionList = new ArrayList<String>();
-	static List<String> variableNameList = new ArrayList<String>();
+	private List<String> predictionVariableList = new ArrayList<String>();
+	private List<String> predictionFunctionList = new ArrayList<String>();
+	private List<String> predictionCommandList = new ArrayList<String>();
+	private List<String> commandList = new ArrayList<String>();
 	private List<String> methodNameList = new ArrayList<String>();
 	private int prefontsize = 15;
 
@@ -874,7 +875,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private void setPrediction() {
 		System.out.println("setPrediction"); //$NON-NLS-1$
 		predictionView.setUpdateFunctiuonList(predictionFunctionList);
-		predictionView.setUpdateMaTXFunctionList(predictionMaTXFunctionList);
+		predictionView.setUpdateMaTXFunctionList(predictionCommandList);
 		predictionView.setUpdateVariableList(predictionVariableList);
 		predictionView.setfontsize(mTextView.getTextSize() * 0.9f);
 		predictionView.setCount(this.inputCount);
@@ -886,7 +887,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		System.out.println("prediction"); //$NON-NLS-1$
 		predictionVariableList.clear();
 		predictionFunctionList.clear();
-		predictionMaTXFunctionList.clear();
+		predictionCommandList.clear();
 		int predictionCount = 0;
 		int left = 0;
 		int top = 0;

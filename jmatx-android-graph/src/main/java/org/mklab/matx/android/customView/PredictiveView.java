@@ -24,7 +24,7 @@ public class PredictiveView extends View {
 	private float moveX = 0;
 	private float moveY = 0;
 	private List<String> predictionFunctionList = new ArrayList<String>();
-	private List<String> predictionMaTXFunctionList = new ArrayList<String>();
+	private List<String> predictionCommandList = new ArrayList<String>();
 	private String predictionFunction = ""; //$NON-NLS-1$
 	private String predictionVariable = ""; //$NON-NLS-1$
 	private String predictionMaTXFunction = ""; //$NON-NLS-1$
@@ -101,7 +101,7 @@ public class PredictiveView extends View {
 	 * @param predictionList
 	 */
 	public void setUpdateMaTXFunctionList(List<String> predictionList) {
-		this.predictionMaTXFunctionList = predictionList;
+		this.predictionCommandList = predictionList;
 		System.out.println("setUpdateMaTXFunctionList");
 		System.out.println(this.predictionMaTXFunction);
 	}
@@ -206,7 +206,7 @@ public class PredictiveView extends View {
 			left = left + leftSize;
 		}
 
-		for (final String c : this.predictionMaTXFunctionList) {
+		for (final String c : this.predictionCommandList) {
 			int leftSize = c.length() * this.textSize;
 			// 二段目に移動させる
 			if ((left + leftSize) > this.width) {
