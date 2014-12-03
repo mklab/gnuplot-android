@@ -1,0 +1,9 @@
+﻿sin,cos,tan,asin,acos,atan,atan2,sinh,cosh,tanh,asinh,acosh,atanh
+exp,log,log10
+sqrt,abs
+arg,real,imag
+erf,erfc,inverf,gamma,igamma,ibeta
+besj0,besj1,besy0,besy1
+ceil,floor,int
+norm,invnorm
+sgn,rand,lambertw
