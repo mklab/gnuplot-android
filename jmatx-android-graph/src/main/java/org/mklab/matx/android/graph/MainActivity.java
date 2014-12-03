@@ -910,7 +910,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private void methodNameLoader() {
-//		methodNameList.add("sin");
+		methodNameList.add("sin");
 //		methodNameList.add("cos");
 //		methodNameList.add("tan");
 		AssetManager as = getResources().getAssets();
