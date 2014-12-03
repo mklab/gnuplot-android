@@ -117,6 +117,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		predictionView.setfontsize(this.fontSize);
 
 		methodNameLoader();
+		commandNameLoader();
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -194,6 +195,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 		onNewIntent(getIntent());
 
 	}
+
+
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -899,7 +902,20 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		float widthSize = disp.getWidth();
 		if (!input.equals("")) { //$NON-NLS-1$
-
+			for (final String c : commandList) {
+				if (c.startsWith(input)) {
+					predictionCommandList.add(c);
+					int leftSize = (int) (c.length() * editText
+							.getTextSize());
+					// 二段目に移動させる
+					if ((left + leftSize) > widthSize) {
+						top += 1;
+						left = 0;
+					}
+					left += leftSize;
+					predictionCount += 1;
+				}
+			}
 			for (final String c : methodNameList) {
 				if (c.startsWith(input)) {
 					predictionFunctionList.add(c);
@@ -927,9 +943,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private void methodNameLoader() {
-		methodNameList.add("sin");
-//		methodNameList.add("cos");
-//		methodNameList.add("tan");
 		AssetManager as = getResources().getAssets();
         InputStream st = null;
         try {
@@ -957,6 +970,37 @@ public class MainActivity extends Activity implements KeyboardListner,
         }
         System.out.println("load " + methodNameList);
 		resetPrediction();
+	}
+	
+	private void commandNameLoader() {
+		AssetManager as = getResources().getAssets();
+        InputStream st = null;
+        try {
+            st = as.open("commnads.csv");
+            byte[] buffer = new byte[st.available()];
+            while ((st.read(buffer)) != -1) {
+            }
+            String s = new String(buffer);// この中にテキストの内容が入る
+            String[] temp = s.split("\n");
+            for (int i = 0; i < temp.length; i++) {
+ 
+                String[] temp2 = temp[i].split(",");
+                for (int j = 0; j < temp2.length; j++) {
+                	commandList.add(temp2[j]);
+                }
+ 
+            }
+ 
+        } catch (IOException e) {
+        } finally {
+            try {
+                st.close();
+            } catch (IOException e2) {
+            }
+        }
+        System.out.println("load " + methodNameList);
+		resetPrediction();
+	
 	}
 
 	private List<String> symbols = new ArrayList<String>(38) {
