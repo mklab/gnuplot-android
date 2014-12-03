@@ -703,7 +703,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public void sendKeyDown(int key_code) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code);
-
+		resetPrediction();
 		if ((key_code == KeyEvent.KEYCODE_ENTER)
 				&& (MainActivity.this._ready == true)) {
 			String command = MainActivity.this.editText.getText().toString();
