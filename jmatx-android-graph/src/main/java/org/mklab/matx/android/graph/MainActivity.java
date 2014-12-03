@@ -878,7 +878,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private void setPrediction() {
 		System.out.println("setPrediction"); //$NON-NLS-1$
 		predictionView.setUpdateFunctiuonList(predictionFunctionList);
-		predictionView.setUpdateMaTXFunctionList(predictionCommandList);
+		predictionView.setUpdateCommandList(predictionCommandList);
 		predictionView.setUpdateVariableList(predictionVariableList);
 		predictionView.setfontsize(mTextView.getTextSize() * 0.9f);
 		predictionView.setCount(this.inputCount);
@@ -976,7 +976,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		AssetManager as = getResources().getAssets();
         InputStream st = null;
         try {
-            st = as.open("commnads.csv");
+            st = as.open("commands.csv");
             byte[] buffer = new byte[st.available()];
             while ((st.read(buffer)) != -1) {
             }

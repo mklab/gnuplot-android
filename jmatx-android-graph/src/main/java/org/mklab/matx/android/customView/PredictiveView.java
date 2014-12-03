@@ -27,7 +27,7 @@ public class PredictiveView extends View {
 	private List<String> predictionCommandList = new ArrayList<String>();
 	private String predictionFunction = ""; //$NON-NLS-1$
 	private String predictionVariable = ""; //$NON-NLS-1$
-	private String predictionMaTXFunction = ""; //$NON-NLS-1$
+	private String predictionCommand = ""; //$NON-NLS-1$
 	private int count;
 	private int textSize;
 	private float boxHeight;
@@ -100,10 +100,8 @@ public class PredictiveView extends View {
 	 * 
 	 * @param predictionList
 	 */
-	public void setUpdateMaTXFunctionList(List<String> predictionList) {
+	public void setUpdateCommandList(List<String> predictionList) {
 		this.predictionCommandList = predictionList;
-		System.out.println("setUpdateMaTXFunctionList");
-		System.out.println(this.predictionMaTXFunction);
 	}
 
 	/**
@@ -188,7 +186,7 @@ public class PredictiveView extends View {
 				this.paint.setStyle(Style.FILL);
 				this.predictionVariable = c;
 				this.predictionFunction = ""; //$NON-NLS-1$
-				this.predictionMaTXFunction = ""; //$NON-NLS-1$
+				this.predictionCommand = ""; //$NON-NLS-1$
 			} else {
 				this.paint.setColor(Color.GRAY);
 				this.paint.setStyle(Style.STROKE);
@@ -221,7 +219,7 @@ public class PredictiveView extends View {
 				this.paint.setStyle(Style.FILL);
 				this.predictionVariable = ""; //$NON-NLS-1$
 				this.predictionFunction = ""; //$NON-NLS-1$
-				this.predictionMaTXFunction = c;
+				this.predictionCommand = c;
 			} else {
 				this.paint.setColor(Color.GRAY);
 				this.paint.setStyle(Style.STROKE);
@@ -254,7 +252,7 @@ public class PredictiveView extends View {
 				this.paint.setStyle(Style.FILL);
 				this.predictionVariable = ""; //$NON-NLS-1$
 				this.predictionFunction = c;
-				this.predictionMaTXFunction = ""; //$NON-NLS-1$
+				this.predictionCommand = ""; //$NON-NLS-1$
 
 			} else {
 				this.paint.setColor(Color.GRAY);
@@ -294,8 +292,8 @@ public class PredictiveView extends View {
 						this.getLastCursorPoint());
 			}
 
-			if (!this.predictionMaTXFunction.equals("")) { //$NON-NLS-1$
-				this.lisner.addFunction(this.predictionMaTXFunction,
+			if (!this.predictionCommand.equals("")) { //$NON-NLS-1$
+				this.lisner.addCommand(this.predictionCommand,
 						this.getLastCursorPoint());
 			}
 			if (!this.predictionVariable.equals("")) { //$NON-NLS-1$
@@ -304,7 +302,7 @@ public class PredictiveView extends View {
 			}
 			this.predictionFunction = ""; //$NON-NLS-1$
 			this.predictionVariable = ""; //$NON-NLS-1$
-			this.predictionMaTXFunction = ""; //$NON-NLS-1$
+			this.predictionCommand = ""; //$NON-NLS-1$
 			break;
 		case MotionEvent.ACTION_MOVE:
 			break;
