@@ -1,5 +1,8 @@
 package org.mklab.matx.android.graph;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -20,6 +23,8 @@ import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -632,9 +637,20 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	public void sendBitmap() {
+//		if (this._isCalledIntent) {
+//			Intent intent_ret = new Intent();
+//			Bundle b = new Bundle();
+//			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
+//			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
+//			// intent_ret.setType("image/*");
+//			setResult(RESULT_OK, intent_ret);
+//			finish();
+//		}
+	
 		if (this._isCalledIntent) {
 			Intent intent_ret = new Intent();
 			Bundle b = new Bundle();
+			saveBmp();
 			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
 			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
 			// intent_ret.setType("image/*");
@@ -642,6 +658,24 @@ public class MainActivity extends Activity implements KeyboardListner,
 			finish();
 		}
 	}
+
+	private File saveBmp() {
+		File file = new File("tmp.png");
+	    try {
+	        //出力ファイルを準備
+	        FileOutputStream fos = new FileOutputStream(file);
+	        //PNG形式で出力
+	        this._bitmap.compress(CompressFormat.PNG, 100, fos);
+	        fos.close();
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return file;
+	}
+
+
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
