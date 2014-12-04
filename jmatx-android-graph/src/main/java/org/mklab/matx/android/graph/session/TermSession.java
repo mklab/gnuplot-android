@@ -144,7 +144,7 @@ public class TermSession {
         	public void run() {
         		try {
         			Log.d("TERM", "WAIT START");
-					sleep(500);
+					sleep(1000);
 					Log.d("TERM", "WAIT END");
 					mParent.sendBitmap();
 				} catch (InterruptedException e) {

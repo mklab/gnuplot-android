@@ -88,7 +88,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	List<EditText> editTextList = new ArrayList<EditText>();
 	private int predictionStrCount;
-	
+
 	private int inputCount;
 	private List<String> predictionVariableList = new ArrayList<String>();
 	private List<String> predictionFunctionList = new ArrayList<String>();
@@ -200,8 +200,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		onNewIntent(getIntent());
 
 	}
-
-
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -637,21 +635,22 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	public void sendBitmap() {
-//		if (this._isCalledIntent) {
-//			Intent intent_ret = new Intent();
-//			Bundle b = new Bundle();
-//			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
-//			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
-//			// intent_ret.setType("image/*");
-//			setResult(RESULT_OK, intent_ret);
-//			finish();
-//		}
-	
+		// if (this._isCalledIntent) {
+		// Intent intent_ret = new Intent();
+		// Bundle b = new Bundle();
+		//			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
+		//			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
+		// // intent_ret.setType("image/*");
+		// setResult(RESULT_OK, intent_ret);
+		// finish();
+		// }
+
 		if (this._isCalledIntent) {
 			Intent intent_ret = new Intent();
 			Bundle b = new Bundle();
-			saveBmp();
-			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
+			// saveBmp();
+			//			b.putParcelable("data", saveBmp()); //$NON-NLS-1$
+			b.putString("sata", saveBmp().getPath());
 			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
 			// intent_ret.setType("image/*");
 			setResult(RESULT_OK, intent_ret);
@@ -660,22 +659,21 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private File saveBmp() {
-		File file = new File("tmp.png");
-	    try {
-	        //出力ファイルを準備
-	        FileOutputStream fos = new FileOutputStream(file);
-	        //PNG形式で出力
-	        this._bitmap.compress(CompressFormat.PNG, 100, fos);
-	        fos.close();
-	    } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    return file;
+		File file = new File(getExternalCacheDir(), "tmpGraph.png");
+		try {
+			// 出力ファイルを準備
+			FileOutputStream fos = new FileOutputStream(file);
+			// PNG形式で出力
+			this._bitmap.compress(CompressFormat.PNG, 100, fos);
+			fos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("output file = " + file.getPath());
+		return file;
 	}
-
-
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -877,13 +875,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 		editText.setSelection(lastCursorPoint + var.length());
 		resetPrediction();
 	}
-	
+
 	public void addCommand(String command, int lastCursorPoint) {
-		String frontStr = editText
-				.getText()
-				.toString()
-				.substring(0,
-						predictionView.getLastCursorPoint());
+		String frontStr = editText.getText().toString()
+				.substring(0, predictionView.getLastCursorPoint());
 		String backStr = editText
 				.getText()
 				.toString()
@@ -939,8 +934,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			for (final String c : commandList) {
 				if (c.startsWith(input)) {
 					predictionCommandList.add(c);
-					int leftSize = (int) (c.length() * editText
-							.getTextSize());
+					int leftSize = (int) (c.length() * editText.getTextSize());
 					// 二段目に移動させる
 					if ((left + leftSize) > widthSize) {
 						top += 1;
@@ -971,70 +965,70 @@ public class MainActivity extends Activity implements KeyboardListner,
 			predictionView.setSize(0, 0);
 		}
 		System.out.println(predictionCount);
-		System.out.println((int) widthSize + "  " + 
-				(int) (mTextView.getTextSize() * (top + 2) * 1.1));
+		System.out.println((int) widthSize + "  "
+				+ (int) (mTextView.getTextSize() * (top + 2) * 1.1));
 		System.out.println(predictionFunctionList);
 	}
 
 	private void methodNameLoader() {
 		AssetManager as = getResources().getAssets();
-        InputStream st = null;
-        try {
-            st = as.open("functions.csv");
-            byte[] buffer = new byte[st.available()];
-            while ((st.read(buffer)) != -1) {
-            }
-            String s = new String(buffer);// この中にテキストの内容が入る
-            String[] temp = s.split("\n");
-            for (int i = 0; i < temp.length; i++) {
- 
-                String[] temp2 = temp[i].split(",");
-                for (int j = 0; j < temp2.length; j++) {
-                	methodNameList.add(temp2[j]);
-                }
- 
-            }
- 
-        } catch (IOException e) {
-        } finally {
-            try {
-                st.close();
-            } catch (IOException e2) {
-            }
-        }
-        System.out.println("load " + methodNameList);
+		InputStream st = null;
+		try {
+			st = as.open("functions.csv");
+			byte[] buffer = new byte[st.available()];
+			while ((st.read(buffer)) != -1) {
+			}
+			String s = new String(buffer);// この中にテキストの内容が入る
+			String[] temp = s.split("\n");
+			for (int i = 0; i < temp.length; i++) {
+
+				String[] temp2 = temp[i].split(",");
+				for (int j = 0; j < temp2.length; j++) {
+					methodNameList.add(temp2[j]);
+				}
+
+			}
+
+		} catch (IOException e) {
+		} finally {
+			try {
+				st.close();
+			} catch (IOException e2) {
+			}
+		}
+		System.out.println("load " + methodNameList);
 		resetPrediction();
 	}
-	
+
 	private void commandNameLoader() {
 		AssetManager as = getResources().getAssets();
-        InputStream st = null;
-        try {
-            st = as.open("commands.csv");
-            byte[] buffer = new byte[st.available()];
-            while ((st.read(buffer)) != -1) {
-            }
-            String s = new String(buffer);// この中にテキストの内容が入る
-            String[] temp = s.split("\n");
-            for (int i = 0; i < temp.length; i++) {
- 
-                String[] temp2 = temp[i].split(",");
-                for (int j = 0; j < temp2.length; j++) {
-                	commandList.add(temp2[j]);
-                }
- 
-            }
- 
-        } catch (IOException e) {
-        } finally {
-            try {
-                st.close();
-            } catch (IOException e2) {
-            }
-        }
-        System.out.println("load " + methodNameList);
+		InputStream st = null;
+		try {
+			st = as.open("commands.csv");
+			byte[] buffer = new byte[st.available()];
+			while ((st.read(buffer)) != -1) {
+			}
+			String s = new String(buffer);// この中にテキストの内容が入る
+			String[] temp = s.split("\n");
+			for (int i = 0; i < temp.length; i++) {
+
+				String[] temp2 = temp[i].split(",");
+				for (int j = 0; j < temp2.length; j++) {
+					commandList.add(temp2[j]);
+				}
+
+			}
+
+		} catch (IOException e) {
+		} finally {
+			try {
+				st.close();
+			} catch (IOException e2) {
+			}
+		}
+		System.out.println("load " + methodNameList);
 		resetPrediction();
-	
+
 	}
 
 	private List<String> symbols = new ArrayList<String>(38) {
