@@ -650,7 +650,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			Bundle b = new Bundle();
 			// saveBmp();
 			//			b.putParcelable("data", saveBmp()); //$NON-NLS-1$
-			b.putString("sata", saveBmp().getPath());
+			b.putString("data", saveBmp().getPath());
 			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
 			// intent_ret.setType("image/*");
 			setResult(RESULT_OK, intent_ret);
