@@ -29,11 +29,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
+import android.text.Html.ImageGetter;
 import android.text.InputType;
+import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -56,7 +60,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	DemoView demoview = null;
 	private Canvas _canvas = null;
 	private Bitmap _bitmap = null;
-	private int _screenHeight;
+	int _screenHeight;
 	private int _screenWidth;
 	private int _textHeight;
 	private int _textWidth;
@@ -80,7 +84,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private MainActivity _sessionParent = null;
 	private static final int REQUEST_CODE_GRAPH = 2;
 	private static final int RESULT_CODE_SUB_GRAPH = 101;
-	private TermSession mTermSession;
+	TermSession mTermSession;
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
 	private PredictiveView predictionView;
@@ -1073,5 +1077,19 @@ public class MainActivity extends Activity implements KeyboardListner,
 			add("0"); //$NON-NLS-1$
 		}
 	};
+	
+	private void addImageForTexiview(final String path){
+		
+		ImageGetter imageGetter = new ImageGetter() {
+		    public Drawable getDrawable(String source) {
+		        Drawable d = Drawable.createFromPath(path);
+		        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+		        return d;
+		    }
+		};
+
+		Spanned htmlstr= Html.fromHtml("<img src='" + path + "'/>", imageGetter, null);
+	
+	}
 
 }
