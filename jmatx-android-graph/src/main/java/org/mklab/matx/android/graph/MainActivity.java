@@ -780,7 +780,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code); //$NON-NLS-1$
 		resetPrediction();
-		this.historyIndex = this.counter;
 		if ((key_code == KeyEvent.KEYCODE_ENTER)
 				&& (MainActivity.this._ready == true)) {
 			String command = MainActivity.this.editText.getText().toString();
@@ -794,6 +793,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		} else if (key_code == MyKeyboard.KEY_CODE_CURSOR_DOWN) {
 			downHistory();
 		} else {
+			this.historyIndex = this.counter;
 			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0),
 					key_code);
 		}
