@@ -617,7 +617,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 						graphics();
 					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
 						System.out.println("DemoView invalidate"); //$NON-NLS-1$
-						saveBmp().getPath();
+						String filePath = saveBmp().getPath();
+						addImageForTexiview(filePath);
 						// this.demoview.invalidate();
 						// this.mSwitcher.showNext();
 					}
@@ -636,11 +637,14 @@ public class MainActivity extends Activity implements KeyboardListner,
 			this.textViewString = textLines[lineNum]
 					+ "\n" + this.textViewString; //$NON-NLS-1$
 		}
-		this.mTextView.setText(this.textViewString);
+		//this.mTextView.setText(this.textViewString);
 		scrollToBottom();
 		// saveBitmapToSd(_bitmap);
 	}
 
+	/**
+	 * インテント呼び出しがあった場合、ファイルパスをインテントに乗せて呼び出し元のアプリケーションに送ります
+	 */
 	public void sendBitmap() {
 		// if (this._isCalledIntent) {
 		// Intent intent_ret = new Intent();
@@ -667,12 +671,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private File saveBmp() {
-	    Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
 		int HH = cal.get(Calendar.HOUR_OF_DAY);
 		int mm = cal.get(Calendar.MINUTE);
 		int ss = cal.get(Calendar.SECOND);
 		int SSS = cal.get(Calendar.MILLISECOND);
-		File file = new File(getExternalCacheDir(), HH+""+mm+""+ss+""+SSS+".png"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		File file = new File(getExternalCacheDir(), HH
+				+ "" + mm + "" + ss + "" + SSS + ".png"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		try {
 			// 出力ファイルを準備
 			FileOutputStream fos = new FileOutputStream(file);
@@ -1090,7 +1095,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	};
 
 	private void addImageForTexiview(final String path) {
-
+		System.out.println("ADD IMAGE");
+		this.mTextView.setText("");
 		ImageGetter imageGetter = new ImageGetter() {
 			public Drawable getDrawable(String source) {
 				Drawable d = Drawable.createFromPath(path);
@@ -1101,7 +1107,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		Spanned htmlstr = Html.fromHtml(
 				"<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
-
+		
+		System.out.println("HTML STR = " +htmlstr);
+		String str = this.mTextView.getText() + "\n" + htmlstr.toString();
+		this.mTextView.setText(htmlstr);
 	}
 
 }
