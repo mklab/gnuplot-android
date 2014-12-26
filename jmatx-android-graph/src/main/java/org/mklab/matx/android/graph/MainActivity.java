@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.mklab.matx.android.customView.AddPredictionMessage;
@@ -120,10 +121,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		this.promptTextView = (TextView) findViewById(R.id.prompt);
 
-		predictionView = (PredictiveView) findViewById(R.id.CustomView);
-		predictionView.setSize(300, 300);
-		predictionView.setContext(this);
-		predictionView.setfontsize(this.fontSize);
+		this.predictionView = (PredictiveView) findViewById(R.id.CustomView);
+		this.predictionView.setSize(300, 300);
+		this.predictionView.setContext(this);
+		this.predictionView.setfontsize(this.fontSize);
 
 		methodNameLoader();
 		commandNameLoader();
@@ -615,8 +616,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 					} else if (termCommand[1].equals("graphics")) { //$NON-NLS-1$
 						graphics();
 					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
-						this.demoview.invalidate();
-						this.mSwitcher.showNext();
+						System.out.println("DemoView invalidate"); //$NON-NLS-1$
+						saveBmp().getPath();
+						// this.demoview.invalidate();
+						// this.mSwitcher.showNext();
 					}
 				} else {
 					this.textViewString = this.textViewString + lines[lineNum]
@@ -648,13 +651,14 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// setResult(RESULT_OK, intent_ret);
 		// finish();
 		// }
+		saveBmp().getPath();
 
 		if (this._isCalledIntent) {
 			Intent intent_ret = new Intent();
 			Bundle b = new Bundle();
 			// saveBmp();
 			//			b.putParcelable("data", saveBmp()); //$NON-NLS-1$
-			b.putString("data", saveBmp().getPath());
+			b.putString("data", saveBmp().getPath()); //$NON-NLS-1$
 			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
 			// intent_ret.setType("image/*");
 			setResult(RESULT_OK, intent_ret);
@@ -663,7 +667,12 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	private File saveBmp() {
-		File file = new File(getExternalCacheDir(), "tmpGraph.png");
+	    Calendar cal = Calendar.getInstance();
+		int HH = cal.get(Calendar.HOUR_OF_DAY);
+		int mm = cal.get(Calendar.MINUTE);
+		int ss = cal.get(Calendar.SECOND);
+		int SSS = cal.get(Calendar.MILLISECOND);
+		File file = new File(getExternalCacheDir(), HH+""+mm+""+ss+""+SSS+".png"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		try {
 			// 出力ファイルを準備
 			FileOutputStream fos = new FileOutputStream(file);
@@ -675,7 +684,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("output file = " + file.getPath());
+		System.out.println("output file = " + file.getPath()); //$NON-NLS-1$
 		return file;
 	}
 
@@ -742,7 +751,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	public void sendKeyDown(int key_code) {
 		// TODO Auto-generated method stub
-		System.out.println("KEY CODE " + key_code);
+		System.out.println("KEY CODE " + key_code); //$NON-NLS-1$
 		resetPrediction();
 		if ((key_code == KeyEvent.KEYCODE_ENTER)
 				&& (MainActivity.this._ready == true)) {
@@ -758,9 +767,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
-		System.out.println("KEY INPUT " + inputText);
+		System.out.println("KEY INPUT " + inputText); //$NON-NLS-1$
 
-		if (predictionView.getLastCursorPoint() + this.predictionStrCount != editText
+		if (this.predictionView.getLastCursorPoint() + this.predictionStrCount != this.editText
 				.getSelectionEnd()) {
 			resetPrediction();
 		}
@@ -769,29 +778,29 @@ public class MainActivity extends Activity implements KeyboardListner,
 			return;
 		}
 
-		predictionView.clear();
+		this.predictionView.clear();
 		this.inputCount = inputText.length();
 		Log.d("CONSOLE", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
-		if (!inputText.equals("\n")) {
+		if (!inputText.equals("\n")) { //$NON-NLS-1$
 			CustomEditTextFunction.insertText(this.editTextList.get(0),
 					inputText);
 		}
 		if (inputText.length() > 1 || this.symbols.indexOf(inputText) > 0
-				|| editText.getText().toString().isEmpty()) {
+				|| this.editText.getText().toString().isEmpty()) {
 			resetPrediction();
 		} else {
 			this.predictionStrCount += 1;
 			System.out.println(this.predictionStrCount);
-			System.out.println(editText.getText().toString() + "   "
-					+ predictionView.getLastCursorPoint() + "  "
+			System.out.println(this.editText.getText().toString() + "   " //$NON-NLS-1$
+					+ this.predictionView.getLastCursorPoint() + "  " //$NON-NLS-1$
 					+ this.predictionStrCount);
-			String pre = editText
+			String pre = this.editText
 					.getText()
 					.toString()
 					.substring(
-							predictionView.getLastCursorPoint(),
+							this.predictionView.getLastCursorPoint(),
 							this.predictionStrCount
-									+ predictionView.getLastCursorPoint());
+									+ this.predictionView.getLastCursorPoint());
 			System.out.println(pre);
 			prediction(pre);
 		}
@@ -855,75 +864,76 @@ public class MainActivity extends Activity implements KeyboardListner,
 	}
 
 	public void addFunction(String function, int lastCursorPoint) {
-		String frontStr = editText.getText().toString()
-				.substring(0, predictionView.getLastCursorPoint());
-		String backStr = editText
+		String frontStr = this.editText.getText().toString()
+				.substring(0, this.predictionView.getLastCursorPoint());
+		String backStr = this.editText
 				.getText()
 				.toString()
-				.substring(editText.getSelectionEnd(),
-						editText.getText().toString().length());
-		editText.setText(frontStr + function + "()" + backStr); //$NON-NLS-1$
-		editText.setSelection(lastCursorPoint + function.length() + 1);
+				.substring(this.editText.getSelectionEnd(),
+						this.editText.getText().toString().length());
+		this.editText.setText(frontStr + function + "()" + backStr); //$NON-NLS-1$
+		this.editText.setSelection(lastCursorPoint + function.length() + 1);
 		resetPrediction();
 	}
 
 	public void addVariable(String var, int lastCursorPoint) {
-		String frontStr = editText.getText().toString()
-				.substring(0, predictionView.getLastCursorPoint());
-		String backStr = editText
+		String frontStr = this.editText.getText().toString()
+				.substring(0, this.predictionView.getLastCursorPoint());
+		String backStr = this.editText
 				.getText()
 				.toString()
-				.substring(editText.getSelectionEnd(),
-						editText.getText().toString().length());
-		editText.setText(frontStr + var + backStr);
-		editText.setSelection(lastCursorPoint + var.length());
+				.substring(this.editText.getSelectionEnd(),
+						this.editText.getText().toString().length());
+		this.editText.setText(frontStr + var + backStr);
+		this.editText.setSelection(lastCursorPoint + var.length());
 		resetPrediction();
 	}
 
 	public void addCommand(String command, int lastCursorPoint) {
-		String frontStr = editText.getText().toString()
-				.substring(0, predictionView.getLastCursorPoint());
-		String backStr = editText
+		String frontStr = this.editText.getText().toString()
+				.substring(0, this.predictionView.getLastCursorPoint());
+		String backStr = this.editText
 				.getText()
 				.toString()
-				.substring(editText.getSelectionEnd(),
-						editText.getText().toString().length());
-		editText.setText(frontStr + command + " " + backStr);
-		editText.setSelection(lastCursorPoint + command.length() + 1);
+				.substring(this.editText.getSelectionEnd(),
+						this.editText.getText().toString().length());
+		this.editText.setText(frontStr + command + " " + backStr); //$NON-NLS-1$
+		this.editText.setSelection(lastCursorPoint + command.length() + 1);
 		resetPrediction();
 	}
 
 	private void resetPrediction() {
-		System.out.println("reset  " + editText.getSelectionStart());
-		predictionView.setLastCursorPoint(editText.getSelectionStart());
-		predictionView.clear();
+		System.out.println("reset  " + this.editText.getSelectionStart()); //$NON-NLS-1$
+		this.predictionView.setLastCursorPoint(this.editText
+				.getSelectionStart());
+		this.predictionView.clear();
 		this.predictionStrCount = 0;
 		prediction(""); //$NON-NLS-1$
 	}
 
 	public void cerateMessage(String message) {
-		editText.setText(message);
-		Editable result = editText.getText();
-		editText.setSelection(result.toString().length());
+		this.editText.setText(message);
+		Editable result = this.editText.getText();
+		this.editText.setSelection(result.toString().length());
 		resetPrediction();
 	}
 
 	private void setPrediction() {
 		System.out.println("setPrediction"); //$NON-NLS-1$
-		predictionView.setUpdateFunctiuonList(predictionFunctionList);
-		predictionView.setUpdateCommandList(predictionCommandList);
-		predictionView.setUpdateVariableList(predictionVariableList);
-		predictionView.setfontsize(mTextView.getTextSize() * 0.9f);
-		predictionView.setCount(this.inputCount);
+		this.predictionView.setUpdateFunctiuonList(this.predictionFunctionList);
+		this.predictionView.setUpdateCommandList(this.predictionCommandList);
+		this.predictionView.setUpdateVariableList(this.predictionVariableList);
+		this.predictionView.setfontsize(this.mTextView.getTextSize() * 0.9f);
+		this.predictionView.setCount(this.inputCount);
 		// ビューを意図的に更新する
-		promptTextView.setText(promptTextView.getText().toString());
+		this.promptTextView.setText(this.promptTextView.getText().toString());
 	}
 
 	private void prediction(String input) {
 		System.out.println("prediction"); //$NON-NLS-1$
-		predictionVariableList.clear();
-		predictionFunctionList.clear();
-		predictionCommandList.clear();
+		this.predictionVariableList.clear();
+		this.predictionFunctionList.clear();
+		this.predictionCommandList.clear();
 		int predictionCount = 0;
 		int left = 0;
 		int top = 0;
@@ -935,10 +945,11 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		float widthSize = disp.getWidth();
 		if (!input.equals("")) { //$NON-NLS-1$
-			for (final String c : commandList) {
+			for (final String c : this.commandList) {
 				if (c.startsWith(input)) {
-					predictionCommandList.add(c);
-					int leftSize = (int) (c.length() * editText.getTextSize());
+					this.predictionCommandList.add(c);
+					int leftSize = (int) (c.length() * this.editText
+							.getTextSize());
 					// 二段目に移動させる
 					if ((left + leftSize) > widthSize) {
 						top += 1;
@@ -948,9 +959,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 					predictionCount += 1;
 				}
 			}
-			for (final String c : methodNameList) {
+			for (final String c : this.methodNameList) {
 				if (c.startsWith(input)) {
-					predictionFunctionList.add(c);
+					this.predictionFunctionList.add(c);
 					int leftSize = c.length() * (int) this.prefontsize;
 					// 二段目に移動させる
 					if ((left + leftSize) > widthSize) {
@@ -963,32 +974,32 @@ public class MainActivity extends Activity implements KeyboardListner,
 			}
 		}
 		if (predictionCount > 0) {
-			predictionView.setSize((int) widthSize,
-					(int) (mTextView.getTextSize() * (top + 2) * 1.1));
+			this.predictionView.setSize((int) widthSize,
+					(int) (this.mTextView.getTextSize() * (top + 2) * 1.1));
 		} else {
-			predictionView.setSize(0, 0);
+			this.predictionView.setSize(0, 0);
 		}
 		System.out.println(predictionCount);
-		System.out.println((int) widthSize + "  "
-				+ (int) (mTextView.getTextSize() * (top + 2) * 1.1));
-		System.out.println(predictionFunctionList);
+		System.out.println((int) widthSize + "  " //$NON-NLS-1$
+				+ (int) (this.mTextView.getTextSize() * (top + 2) * 1.1));
+		System.out.println(this.predictionFunctionList);
 	}
 
 	private void methodNameLoader() {
 		AssetManager as = getResources().getAssets();
 		InputStream st = null;
 		try {
-			st = as.open("functions.csv");
+			st = as.open("functions.csv"); //$NON-NLS-1$
 			byte[] buffer = new byte[st.available()];
 			while ((st.read(buffer)) != -1) {
 			}
 			String s = new String(buffer);// この中にテキストの内容が入る
-			String[] temp = s.split("\n");
+			String[] temp = s.split("\n"); //$NON-NLS-1$
 			for (int i = 0; i < temp.length; i++) {
 
-				String[] temp2 = temp[i].split(",");
+				String[] temp2 = temp[i].split(","); //$NON-NLS-1$
 				for (int j = 0; j < temp2.length; j++) {
-					methodNameList.add(temp2[j]);
+					this.methodNameList.add(temp2[j]);
 				}
 
 			}
@@ -1000,7 +1011,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			} catch (IOException e2) {
 			}
 		}
-		System.out.println("load " + methodNameList);
+		System.out.println("load " + this.methodNameList); //$NON-NLS-1$
 		resetPrediction();
 	}
 
@@ -1008,17 +1019,17 @@ public class MainActivity extends Activity implements KeyboardListner,
 		AssetManager as = getResources().getAssets();
 		InputStream st = null;
 		try {
-			st = as.open("commands.csv");
+			st = as.open("commands.csv"); //$NON-NLS-1$
 			byte[] buffer = new byte[st.available()];
 			while ((st.read(buffer)) != -1) {
 			}
 			String s = new String(buffer);// この中にテキストの内容が入る
-			String[] temp = s.split("\n");
+			String[] temp = s.split("\n"); //$NON-NLS-1$
 			for (int i = 0; i < temp.length; i++) {
 
-				String[] temp2 = temp[i].split(",");
+				String[] temp2 = temp[i].split(","); //$NON-NLS-1$
 				for (int j = 0; j < temp2.length; j++) {
-					commandList.add(temp2[j]);
+					this.commandList.add(temp2[j]);
 				}
 
 			}
@@ -1030,7 +1041,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			} catch (IOException e2) {
 			}
 		}
-		System.out.println("load " + methodNameList);
+		System.out.println("load " + this.methodNameList); //$NON-NLS-1$
 		resetPrediction();
 
 	}
@@ -1077,19 +1088,20 @@ public class MainActivity extends Activity implements KeyboardListner,
 			add("0"); //$NON-NLS-1$
 		}
 	};
-	
-	private void addImageForTexiview(final String path){
-		
+
+	private void addImageForTexiview(final String path) {
+
 		ImageGetter imageGetter = new ImageGetter() {
-		    public Drawable getDrawable(String source) {
-		        Drawable d = Drawable.createFromPath(path);
-		        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-		        return d;
-		    }
+			public Drawable getDrawable(String source) {
+				Drawable d = Drawable.createFromPath(path);
+				d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+				return d;
+			}
 		};
 
-		Spanned htmlstr= Html.fromHtml("<img src='" + path + "'/>", imageGetter, null);
-	
+		Spanned htmlstr = Html.fromHtml(
+				"<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+
 	}
 
 }

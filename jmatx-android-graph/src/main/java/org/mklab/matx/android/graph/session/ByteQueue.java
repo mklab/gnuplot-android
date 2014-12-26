@@ -22,12 +22,12 @@ package org.mklab.matx.android.graph.session;
 
 public class ByteQueue {
     public ByteQueue(int size) {
-        mBuffer = new byte[size];
+        this.mBuffer = new byte[size];
     }
 
     public int getBytesAvailable() {
         synchronized(this) {
-            return mStoredBytes;
+            return this.mStoredBytes;
         }
     }
 
@@ -46,21 +46,21 @@ public class ByteQueue {
             return 0;
         }
         synchronized(this) {
-            while (mStoredBytes == 0) {
+            while (this.mStoredBytes == 0) {
                 wait();
             }
             int totalRead = 0;
-            int bufferLength = mBuffer.length;
-            boolean wasFull = bufferLength == mStoredBytes;
-            while (length > 0 && mStoredBytes > 0) {
-                int oneRun = Math.min(bufferLength - mHead, mStoredBytes);
+            int bufferLength = this.mBuffer.length;
+            boolean wasFull = bufferLength == this.mStoredBytes;
+            while (length > 0 && this.mStoredBytes > 0) {
+                int oneRun = Math.min(bufferLength - this.mHead, this.mStoredBytes);
                 int bytesToCopy = Math.min(length, oneRun);
-                System.arraycopy(mBuffer, mHead, buffer, offset, bytesToCopy);
-                mHead += bytesToCopy;
-                if (mHead >= bufferLength) {
-                    mHead = 0;
+                System.arraycopy(this.mBuffer, this.mHead, buffer, offset, bytesToCopy);
+                this.mHead += bytesToCopy;
+                if (this.mHead >= bufferLength) {
+                    this.mHead = 0;
                 }
-                mStoredBytes -= bytesToCopy;
+                this.mStoredBytes -= bytesToCopy;
                 length -= bytesToCopy;
                 offset += bytesToCopy;
                 totalRead += bytesToCopy;
@@ -87,24 +87,24 @@ public class ByteQueue {
             return;
         }
         synchronized(this) {
-            int bufferLength = mBuffer.length;
-            boolean wasEmpty = mStoredBytes == 0;
+            int bufferLength = this.mBuffer.length;
+            boolean wasEmpty = this.mStoredBytes == 0;
             while (length > 0) {
-                while(bufferLength == mStoredBytes) {
+                while(bufferLength == this.mStoredBytes) {
                     wait();
                 }
-                int tail = mHead + mStoredBytes;
+                int tail = this.mHead + this.mStoredBytes;
                 int oneRun;
                 if (tail >= bufferLength) {
                     tail = tail - bufferLength;
-                    oneRun = mHead - tail;
+                    oneRun = this.mHead - tail;
                 } else {
                     oneRun = bufferLength - tail;
                 }
                 int bytesToCopy = Math.min(oneRun, length);
-                System.arraycopy(buffer, offset, mBuffer, tail, bytesToCopy);
+                System.arraycopy(buffer, offset, this.mBuffer, tail, bytesToCopy);
                 offset += bytesToCopy;
-                mStoredBytes += bytesToCopy;
+                this.mStoredBytes += bytesToCopy;
                 length -= bytesToCopy;
             }
             if (wasEmpty) {

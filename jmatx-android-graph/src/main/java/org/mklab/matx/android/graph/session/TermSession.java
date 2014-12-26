@@ -72,7 +72,7 @@ public class TermSession {
     private Handler mMsgHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (!mIsRunning) {
+            if (!TermSession.this.mIsRunning) {
                 return;
             }
             if (msg.what == NEW_INPUT) {
@@ -88,49 +88,49 @@ public class TermSession {
 
         int[] processId = new int[1];
         
-        mParent = inParent;
+        this.mParent = inParent;
 
         createSubprocess(processId);
-        mProcId = processId[0];
-        mTermOut = new FileOutputStream(mTermFd);
-        mTermIn = new FileInputStream(mTermFd);
+        this.mProcId = processId[0];
+        this.mTermOut = new FileOutputStream(this.mTermFd);
+        this.mTermIn = new FileInputStream(this.mTermFd);
 
-        mWatcherThread = new Thread() {
+        this.mWatcherThread = new Thread() {
              @Override
              public void run() {
-                Log.i("term", "waiting for: " + mProcId);
-                int result = Exec.waitFor(mProcId);
+                Log.i("term", "waiting for: " + TermSession.this.mProcId);
+                int result = Exec.waitFor(TermSession.this.mProcId);
                 Log.i("term", "Subprocess exited: " + result);
-                mMsgHandler.sendMessage(mMsgHandler.obtainMessage(PROCESS_EXITED, result));
+                TermSession.this.mMsgHandler.sendMessage(TermSession.this.mMsgHandler.obtainMessage(PROCESS_EXITED, result));
                 Log.d("TERM", "RUN END");
              }
         };
-        mWatcherThread.setName("Process watcher");
+        this.mWatcherThread.setName("Process watcher");
 
-        mWriteCharBuffer = CharBuffer.allocate(2);
-        mWriteByteBuffer = ByteBuffer.allocate(4);
-        mUTF8Encoder = Charset.forName("UTF-8").newEncoder();
-        mUTF8Encoder.onMalformedInput(CodingErrorAction.REPLACE);
-        mUTF8Encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+        this.mWriteCharBuffer = CharBuffer.allocate(2);
+        this.mWriteByteBuffer = ByteBuffer.allocate(4);
+        this.mUTF8Encoder = Charset.forName("UTF-8").newEncoder();
+        this.mUTF8Encoder.onMalformedInput(CodingErrorAction.REPLACE);
+        this.mUTF8Encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
 
-        mReceiveBuffer = new byte[4 * 1024];
-        mByteQueue = new ByteQueue(4 * 1024);
+        this.mReceiveBuffer = new byte[4 * 1024];
+        this.mByteQueue = new ByteQueue(4 * 1024);
 
-        mPollingThread = new Thread() {
+        this.mPollingThread = new Thread() {
             private byte[] mBuffer = new byte[4096];
 
             @Override
             public void run() {
                 try {
                     while(true) {
-                        int read = mTermIn.read(mBuffer);
+                        int read = TermSession.this.mTermIn.read(this.mBuffer);
                         if (read == -1) {
                             // EOF -- process exited
                             return;
                         }
-                        mByteQueue.write(mBuffer, 0, read);
-                        mMsgHandler.sendMessage(
-                                mMsgHandler.obtainMessage(NEW_INPUT));
+                        TermSession.this.mByteQueue.write(this.mBuffer, 0, read);
+                        TermSession.this.mMsgHandler.sendMessage(
+                                TermSession.this.mMsgHandler.obtainMessage(NEW_INPUT));
                     }
                 } catch (IOException e) {
                 } catch (InterruptedException e) {
@@ -138,15 +138,15 @@ public class TermSession {
                 Log.d("TERM", "TREAD END");
             }
         };
-        mPollingThread.setName("Input reader");
-        mWaitThread = new Thread(){
+        this.mPollingThread.setName("Input reader");
+        this.mWaitThread = new Thread(){
         	@Override
         	public void run() {
         		try {
         			Log.d("TERM", "WAIT START");
 					sleep(1000);
 					Log.d("TERM", "WAIT END");
-					mParent.sendBitmap();
+					TermSession.this.mParent.sendBitmap();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -158,10 +158,10 @@ public class TermSession {
 
     private void initializeEmulator() {
     	Log.d("TERM", "PROCESS START");
-        mIsRunning = true;
-        mWatcherThread.start();
-        mPollingThread.start();
-        mWaitThread.start();
+        this.mIsRunning = true;
+        this.mWatcherThread.start();
+        this.mPollingThread.start();
+        this.mWaitThread.start();
 		Log.d("TERM", "PROCESS END");
         /*
         try {
@@ -176,8 +176,8 @@ public class TermSession {
 
     public void write(String data) {
         try {
-            mTermOut.write(data.getBytes("UTF-8"));
-            mTermOut.flush();
+            this.mTermOut.write(data.getBytes("UTF-8"));
+            this.mTermOut.flush();
         } catch (IOException e) {
             // Ignore exception
             // We don't really care if the receiver isn't listening.
@@ -186,9 +186,9 @@ public class TermSession {
     }
 
     public void write(int codePoint) {
-        CharBuffer charBuf = mWriteCharBuffer;
-        ByteBuffer byteBuf = mWriteByteBuffer;
-        CharsetEncoder encoder = mUTF8Encoder;
+        CharBuffer charBuf = this.mWriteCharBuffer;
+        ByteBuffer byteBuf = this.mWriteByteBuffer;
+        CharsetEncoder encoder = this.mUTF8Encoder;
         try {
             charBuf.clear();
             byteBuf.clear();
@@ -196,25 +196,25 @@ public class TermSession {
             encoder.reset();
             encoder.encode(charBuf, byteBuf, true);
             encoder.flush(byteBuf);
-            mTermOut.write(byteBuf.array(), 0, byteBuf.position()-1);
-            mTermOut.flush();
+            this.mTermOut.write(byteBuf.array(), 0, byteBuf.position()-1);
+            this.mTermOut.flush();
         } catch (IOException e) {
             // Ignore exception
         }
     }
 
     private void createSubprocess(int[] processId) {
-        mTermFd = Exec.createSubprocess(processId);
+        this.mTermFd = Exec.createSubprocess(processId);
     }
 
     public FileOutputStream getTermOut() {
-        return mTermOut;
+        return this.mTermOut;
     }
 
     public void updateSize(int columns, int rows) {
         // Inform the attached pty of our new size:
-        Exec.setPtyWindowSize(mTermFd, rows, columns, 0, 0);
-        if (mIsRunning == false) {
+        Exec.setPtyWindowSize(this.mTermFd, rows, columns, 0, 0);
+        if (this.mIsRunning == false) {
         	initializeEmulator();
         }
     }
@@ -223,12 +223,12 @@ public class TermSession {
      * Look for new input from the ptty, send it to the terminal emulator.
      */
     private void readFromProcess() {
-        int bytesAvailable = mByteQueue.getBytesAvailable();
-        int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
+        int bytesAvailable = this.mByteQueue.getBytesAvailable();
+        int bytesToRead = Math.min(bytesAvailable, this.mReceiveBuffer.length);
         try {
-            int bytesRead = mByteQueue.read(mReceiveBuffer, 0, bytesToRead);
-            String valueStr = new String(mReceiveBuffer);
-            mParent.processString(valueStr.substring(0, bytesRead));
+            int bytesRead = this.mByteQueue.read(this.mReceiveBuffer, 0, bytesToRead);
+            String valueStr = new String(this.mReceiveBuffer);
+            this.mParent.processString(valueStr.substring(0, bytesRead));
             Log.d("TERM", "readFromProcess END");
         } catch (InterruptedException e) {
         }
@@ -240,8 +240,8 @@ public class TermSession {
     }
 
     public void finish() {
-        Exec.hangupProcessGroup(mProcId);
-        Exec.close(mTermFd);
-        mIsRunning = false;
+        Exec.hangupProcessGroup(this.mProcId);
+        Exec.close(this.mTermFd);
+        this.mIsRunning = false;
     }
 }

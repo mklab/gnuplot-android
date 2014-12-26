@@ -30,7 +30,7 @@ import java.io.FileDescriptor;
 public class Exec
 {
     static {
-        System.loadLibrary("jmatx-android-graph");
+        System.loadLibrary("jmatx-android-graph"); //$NON-NLS-1$
     }
 
     /**
