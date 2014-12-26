@@ -793,7 +793,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		} else if (key_code == MyKeyboard.KEY_CODE_CURSOR_DOWN) {
 			downHistory();
 		} else {
-			this.historyIndex = this.counter;
 			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0),
 					key_code);
 		}
