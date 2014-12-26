@@ -57,17 +57,26 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+/**
+ * @author kawabata
+ *　グラフを表示するアクティビティです
+ */
 public class MainActivity extends Activity implements KeyboardListner,
 		AddPredictionMessage {
 	DemoView demoview = null;
 	private Canvas _canvas = null;
 	private Bitmap _bitmap = null;
 	int _screenHeight;
-	private int _screenWidth;
+	int _screenWidth;
 	private int _textHeight;
 	private int _textWidth;
 	private int _x;
 	private int _y;
+	
+	private List<String> history = new ArrayList<String>();
+	private int conter;
+	private int historyCounter;
+	
 	private LinearLayout mTerminalLayout;
 	private LinearLayout mPlotLayout;
 	private ViewSwitcher mSwitcher;
@@ -86,7 +95,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private MainActivity _sessionParent = null;
 	private static final int REQUEST_CODE_GRAPH = 2;
 	private static final int RESULT_CODE_SUB_GRAPH = 101;
-	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile";
+	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
 	int MAX_WIDTH = 0;
 	TermSession mTermSession;
 	private boolean _isCalledIntent = false;
@@ -583,7 +592,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		String modifiedTermOut = this.partialLine + newTermOut;
 		int incompleteLine;
 		String lines[] = modifiedTermOut.split("\\r?\\n"); //$NON-NLS-1$
-		
+
 		if ((lines.length > 0) && (modifiedTermOut.length() > 0)) {
 			if ((modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\n')
 					|| (modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\r')) {
@@ -1111,33 +1120,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	List<Bitmap> bitmaps = new ArrayList<Bitmap>();
 
-	// private List<String> consoleStrings = new ArrayList<String>();
-
-	// private void addImageForTexiview(final String path) {
-	// graphPaths.add(path);
-	// System.out.println("ADD IMAGE");
-	//
-	//
-	//
-	// ImageGetter imageGetter = new ImageGetter() {
-	// public Drawable getDrawable(String source) {
-	// Drawable d = Drawable.createFromPath(source);
-	// d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
-	// 0 + MainActivity.this.mScrollView.getHeight());
-	// //d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-	// return d;
-	// }
-	// };
-	//
-	// CharSequence htmlstr = Html.fromHtml(
-	//				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
-	//
-	// System.out.println("HTML STR = " +htmlstr);
-	// CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
-	// this.mTextView.setText(htmlstr);
-	// }
 	private void addTexiview(Bitmap bitmap) {
-		//Bitmap bmp = bitmap;
+		// Bitmap bmp = bitmap;
 		if (this.bitmaps.size() == 0 && bitmap == null) {
 			this.mTextView.setText(this.consoleLineString);
 			return;
@@ -1145,17 +1129,15 @@ public class MainActivity extends Activity implements KeyboardListner,
 		ImageGetter imageGetter = new ImageGetter() {
 			@SuppressWarnings({ "deprecation", "boxing" })
 			public Drawable getDrawable(String source) {
-				System.out.println("S.O! " + source);
-				String[] sources = source.split(" ");
-				System.out.println("S.O! Number" + sources[1]);
+				System.out.println("S.O! " + source); //$NON-NLS-1$
+				String[] sources = source.split(" "); //$NON-NLS-1$
+				System.out.println("S.O! Number" + sources[1]); //$NON-NLS-1$
 				Drawable d = new BitmapDrawable(
 						MainActivity.this.bitmaps.get(Integer
 								.valueOf(sources[1])));
 				d.setBounds(0, 0,
 						0 + MainActivity.this.mScrollView.getHeight(),
 						0 + MainActivity.this.mScrollView.getHeight());
-				// d.setBounds(0, 0, d.getIntrinsicWidth(),
-				// d.getIntrinsicHeight());
 				return d;
 			}
 		};
@@ -1163,32 +1145,39 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (bitmap != null) {
 			this.bitmaps.add(bitmap);
 			String bitmapNum = String.valueOf(this.bitmaps.size() - 1);
-			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " "
-					+ bitmapNum + "\n";
+			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$
+					+ bitmapNum + "\n"; //$NON-NLS-1$
 		}
 
-		String imageStr = "";
+		String imageStr = ""; //$NON-NLS-1$
 		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
-		String textViewString = "";
+		String textViewString = ""; //$NON-NLS-1$
 
 		for (String line : textLines) {
 			if (line.indexOf(BITMAP_MARK) != -1) {
-				imageStr = imageStr + "<BR>" + "<img src='" + line + "'/>"
-						+ "<BR>";
+				imageStr = imageStr + "<BR>" + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						+ "<BR>"; //$NON-NLS-1$
 			} else {
-				imageStr = imageStr + line + "<BR>";
+				imageStr = imageStr + line + "<BR>"; //$NON-NLS-1$
 			}
 		}
 		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
 		this.mTextView.setText(htmlstr);
-		System.out.println("BITMAPS " + bitmaps);
-//		this._bitmap = Bitmap.createBitmap(
-//				MainActivity.this._screenWidth,
-//				MainActivity.this._screenHeight,
-//				Bitmap.Config.ARGB_8888);
-//		this._canvas = new Canvas(
-//				MainActivity.this._bitmap);
-//		graphics();
+	}
+	
+
+	/**
+	 * ヒストリー表示（過去）
+	 */
+	private void upHistory() {
 
 	}
+
+	/**
+	 * ヒストリー表示（未来）
+	 */
+	private void downHistory() {
+	
+	}
+
 }
