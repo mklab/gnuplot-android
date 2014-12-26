@@ -112,6 +112,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private List<String> commandList = new ArrayList<String>();
 	private List<String> methodNameList = new ArrayList<String>();
 	private int prefontsize = 15;
+	private boolean canNotHideKeyborad;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -774,6 +775,36 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public void swipeUp() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		System.out.println("Keyevent is " + event); //$NON-NLS-1$
+		System.out.println("Keyevent is " + event.getKeyCode()); //$NON-NLS-1$
+	
+		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+			if (hideMyKeyboard() != 0) {
+				System.out.println("no!!"); //$NON-NLS-1$
+				return true;
+			}
+			System.out.println("back!!"); //$NON-NLS-1$
+		}
+		return super.dispatchKeyEvent(event);
+	}
+
+
+	private int hideMyKeyboard() {
+		int visibility = this.myKeyboard.getVisibility();
+		switch (visibility) {
+		case View.GONE:
+			return 0;
+		case View.VISIBLE:
+			this.myKeyboard.setVisibility(View.GONE);
+			return 1;
+		default:
+			break;
+		}
+		return 0;
 	}
 
 	public void sendKeyDown(int key_code) {
