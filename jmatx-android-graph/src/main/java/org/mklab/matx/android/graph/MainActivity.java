@@ -85,6 +85,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private MainActivity _sessionParent = null;
 	private static final int REQUEST_CODE_GRAPH = 2;
 	private static final int RESULT_CODE_SUB_GRAPH = 101;
+	int MAX_WIDTH = 0;
 	TermSession mTermSession;
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
@@ -125,9 +126,20 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.predictionView.setSize(300, 300);
 		this.predictionView.setContext(this);
 		this.predictionView.setfontsize(this.fontSize);
-
+	
 		methodNameLoader();
 		commandNameLoader();
+		
+		// ウィンドウマネージャのインスタンス取得
+		WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+		// ディスプレイのインスタンス生成
+		Display disp = wm.getDefaultDisplay();
+
+		this.MAX_WIDTH = disp.getWidth();
+		
+		this.mTextView.setText("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		
+		
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -949,6 +961,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		Display disp = wm.getDefaultDisplay();
 
 		float widthSize = disp.getWidth();
+		
 		if (!input.equals("")) { //$NON-NLS-1$
 			for (final String c : this.commandList) {
 				if (c.startsWith(input)) {
@@ -1096,20 +1109,22 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	private void addImageForTexiview(final String path) {
 		System.out.println("ADD IMAGE");
-		this.mTextView.setText("");
+
 		ImageGetter imageGetter = new ImageGetter() {
 			public Drawable getDrawable(String source) {
 				Drawable d = Drawable.createFromPath(path);
-				d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+				d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
+                        0 + MainActivity.this.mScrollView.getHeight());
+				//d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
 				return d;
 			}
 		};
 
-		Spanned htmlstr = Html.fromHtml(
-				"<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+		CharSequence htmlstr = Html.fromHtml(
+				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		System.out.println("HTML STR = " +htmlstr);
-		String str = this.mTextView.getText() + "\n" + htmlstr.toString();
+		CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
 		this.mTextView.setText(htmlstr);
 	}
 
