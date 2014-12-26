@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public TextView promptTextView;
 	public ScrollView mScrollView;
 	public EditText editText;
-	private String textViewString = ""; //$NON-NLS-1$
+	private String consoleLineString = ""; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
 	private int _linetype;
 	private int _linewidth;
@@ -86,6 +86,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private MainActivity _sessionParent = null;
 	private static final int REQUEST_CODE_GRAPH = 2;
 	private static final int RESULT_CODE_SUB_GRAPH = 101;
+	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile";
 	int MAX_WIDTH = 0;
 	TermSession mTermSession;
 	private boolean _isCalledIntent = false;
@@ -127,20 +128,17 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.predictionView.setSize(300, 300);
 		this.predictionView.setContext(this);
 		this.predictionView.setfontsize(this.fontSize);
-	
+
 		methodNameLoader();
 		commandNameLoader();
-		
+
 		// ウィンドウマネージャのインスタンス取得
 		WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
 		// ディスプレイのインスタンス生成
 		Display disp = wm.getDefaultDisplay();
 
 		this.MAX_WIDTH = disp.getWidth();
-		
-		this.mTextView.setText("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-		
-		
+
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -585,6 +583,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		String modifiedTermOut = this.partialLine + newTermOut;
 		int incompleteLine;
 		String lines[] = modifiedTermOut.split("\\r?\\n"); //$NON-NLS-1$
+		
 		if ((lines.length > 0) && (modifiedTermOut.length() > 0)) {
 			if ((modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\n')
 					|| (modifiedTermOut.charAt(modifiedTermOut.length() - 1) == '\r')) {
@@ -595,6 +594,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 				this.partialLine = lines[lines.length - 1];
 			}
 			for (int lineNum = 0; lineNum < lines.length - incompleteLine; lineNum++) {
+				System.out.println(lines[lineNum]);
 				if (lines[lineNum].startsWith("ANDROIDTERM")) { //$NON-NLS-1$
 					lines[lineNum] = lines[lineNum].replaceAll("\\r|\\n", ""); //$NON-NLS-1$ //$NON-NLS-2$
 					String termCommand[] = lines[lineNum].split(","); //$NON-NLS-1$
@@ -630,27 +630,28 @@ public class MainActivity extends Activity implements KeyboardListner,
 						graphics();
 					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
 						System.out.println("DemoView invalidate"); //$NON-NLS-1$
-						String filePath = saveBmp().getPath();
-						addImageForTexiview(this._bitmap);
+						// String filePath = saveBmp().getPath();
+						addTexiview(Bitmap.createBitmap(this._bitmap));
 						// this.demoview.invalidate();
 						// this.mSwitcher.showNext();
 					}
 				} else {
-					this.textViewString = this.textViewString + lines[lineNum]
-							+ "\n"; //$NON-NLS-1$
+					this.consoleLineString = this.consoleLineString
+							+ lines[lineNum] + "\n"; //$NON-NLS-1$
 				}
 			}
 		}
-		String textLines[] = this.textViewString.split("\\n"); //$NON-NLS-1$
-		this.textViewString = ""; //$NON-NLS-1$
+		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
+		this.consoleLineString = ""; //$NON-NLS-1$
 		int lineNum;
 		int lineCount;
 		for (lineNum = textLines.length - 1, lineCount = 0; (lineNum >= 0)
 				&& (lineCount < 1000); lineNum--, lineCount++) {
-			this.textViewString = textLines[lineNum]
-					+ "\n" + this.textViewString; //$NON-NLS-1$
+			this.consoleLineString = textLines[lineNum]
+					+ "\n" + this.consoleLineString; //$NON-NLS-1$
 		}
-		//this.mTextView.setText(this.textViewString);
+		// this.mTextView.setText(this.textViewString);
+		addTexiview(null);
 		scrollToBottom();
 		// saveBitmapToSd(_bitmap);
 	}
@@ -962,7 +963,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		Display disp = wm.getDefaultDisplay();
 
 		float widthSize = disp.getWidth();
-		
+
 		if (!input.equals("")) { //$NON-NLS-1$
 			for (final String c : this.commandList) {
 				if (c.startsWith(input)) {
@@ -1108,53 +1109,86 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	};
 
-	List<Bitmap> graphPaths = new ArrayList<Bitmap>();
-//	private void addImageForTexiview(final String path) {
-//		graphPaths.add(path);
-//		System.out.println("ADD IMAGE");
-//		
-//		
-//
-//		ImageGetter imageGetter = new ImageGetter() {
-//			public Drawable getDrawable(String source) {
-//				Drawable d = Drawable.createFromPath(source);
-//				d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
-//                        0 + MainActivity.this.mScrollView.getHeight());
-//				//d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-//				return d;
-//			}
-//		};
-//
-//		CharSequence htmlstr = Html.fromHtml(
-//				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
-//		
-//		System.out.println("HTML STR = " +htmlstr);
-//		CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
-//		this.mTextView.setText(htmlstr);
-//	}
-	private void addImageForTexiview(final Bitmap bitmap) {
-		System.out.println("ADD IMAGE");
-		this.graphPaths.add(bitmap);
+	List<Bitmap> bitmaps = new ArrayList<Bitmap>();
 
+	// private List<String> consoleStrings = new ArrayList<String>();
+
+	// private void addImageForTexiview(final String path) {
+	// graphPaths.add(path);
+	// System.out.println("ADD IMAGE");
+	//
+	//
+	//
+	// ImageGetter imageGetter = new ImageGetter() {
+	// public Drawable getDrawable(String source) {
+	// Drawable d = Drawable.createFromPath(source);
+	// d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
+	// 0 + MainActivity.this.mScrollView.getHeight());
+	// //d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+	// return d;
+	// }
+	// };
+	//
+	// CharSequence htmlstr = Html.fromHtml(
+	//				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+	//
+	// System.out.println("HTML STR = " +htmlstr);
+	// CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
+	// this.mTextView.setText(htmlstr);
+	// }
+	private void addTexiview(Bitmap bitmap) {
+		//Bitmap bmp = bitmap;
+		if (this.bitmaps.size() == 0 && bitmap == null) {
+			this.mTextView.setText(this.consoleLineString);
+			return;
+		}
 		ImageGetter imageGetter = new ImageGetter() {
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings({ "deprecation", "boxing" })
 			public Drawable getDrawable(String source) {
-				System.out.println("S.O! " +source);
-				MainActivity.this.graphPaths.get(0);
-				Drawable d = new BitmapDrawable(bitmap);
-				d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
-                        0 + MainActivity.this.mScrollView.getHeight());
-				//d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+				System.out.println("S.O! " + source);
+				String[] sources = source.split(" ");
+				System.out.println("S.O! Number" + sources[1]);
+				Drawable d = new BitmapDrawable(
+						MainActivity.this.bitmaps.get(Integer
+								.valueOf(sources[1])));
+				d.setBounds(0, 0,
+						0 + MainActivity.this.mScrollView.getHeight(),
+						0 + MainActivity.this.mScrollView.getHeight());
+				// d.setBounds(0, 0, d.getIntrinsicWidth(),
+				// d.getIntrinsicHeight());
 				return d;
 			}
 		};
 
-		CharSequence htmlstr = Html.fromHtml(
-				this.mTextView.getText() + "\n" + "<img src='" + "1" + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
-		
-		System.out.println("HTML STR = " +htmlstr);
-		CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
-		this.mTextView.setText(htmlstr);
-	}
+		if (bitmap != null) {
+			this.bitmaps.add(bitmap);
+			String bitmapNum = String.valueOf(this.bitmaps.size() - 1);
+			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " "
+					+ bitmapNum + "\n";
+		}
 
+		String imageStr = "";
+		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
+		String textViewString = "";
+
+		for (String line : textLines) {
+			if (line.indexOf(BITMAP_MARK) != -1) {
+				imageStr = imageStr + "<BR>" + "<img src='" + line + "'/>"
+						+ "<BR>";
+			} else {
+				imageStr = imageStr + line + "<BR>";
+			}
+		}
+		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+		this.mTextView.setText(htmlstr);
+		System.out.println("BITMAPS " + bitmaps);
+//		this._bitmap = Bitmap.createBitmap(
+//				MainActivity.this._screenWidth,
+//				MainActivity.this._screenHeight,
+//				Bitmap.Config.ARGB_8888);
+//		this._canvas = new Canvas(
+//				MainActivity.this._bitmap);
+//		graphics();
+
+	}
 }
