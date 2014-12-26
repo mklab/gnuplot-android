@@ -20,11 +20,6 @@ import android.widget.EditText;
  */
 public class CustomEditTextFunction {
 
-	private static final int KEY_CODE_CURSOR_LEFT = -1;
-	private static final int KEY_CODE_CURSOR_RIGHT = -2;
-	private static final int KEY_CODE_CURSOR_UP = -3;
-	private static final int KEY_CODE_CURSOR_DOWN = -4;
-
 	/**
 	 * 入力部の任意の位置にメッセージを挿入し、カーソルを最後に移動します
 	 * 
@@ -83,16 +78,16 @@ public class CustomEditTextFunction {
 			break;
 		case KeyEvent.KEYCODE_DPAD_DOWN:
 			break;
-		case KEY_CODE_CURSOR_LEFT:
+		case MyKeyboard.KEY_CODE_CURSOR_LEFT:
 			moveLeftCursor(editText);
 			break;
-		case KEY_CODE_CURSOR_RIGHT:
+		case MyKeyboard.KEY_CODE_CURSOR_RIGHT:
 			moveRightCursor(editText);
 			break;
-		case KEY_CODE_CURSOR_UP:
+		case MyKeyboard.KEY_CODE_CURSOR_UP:
 			moveUpCursor(editText);
 			break;
-		case KEY_CODE_CURSOR_DOWN:
+		case MyKeyboard.KEY_CODE_CURSOR_DOWN:
 			moveDownCursor(editText);
 			break;
 		case KeyEvent.KEYCODE_DPAD_UP:

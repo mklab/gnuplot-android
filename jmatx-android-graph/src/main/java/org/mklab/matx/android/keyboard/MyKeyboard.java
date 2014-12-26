@@ -26,9 +26,11 @@ public class MyKeyboard extends KeyboardView implements
 	static final int CHANGE_KEY_CODE_FUNCTION = -144;
 	static final int CHANGE_KEY_CODE_DEFAULT_SHIFT = -169;
 	static final int CHANGE_KEY_CODE_TENKEY = -196;
-	static final int KEY_CODE_CURSOR_RIGHT = -2000;
-	static final int KEY_CODE_CURSOR_LEFT = -1000;
 	static final int KEY_CODE_SPACE = 32;
+	public static final int KEY_CODE_CURSOR_LEFT = -1;
+	public static final int KEY_CODE_CURSOR_RIGHT = -2;
+	public static final int KEY_CODE_CURSOR_UP = -3;
+	public static final int KEY_CODE_CURSOR_DOWN = -4;
 	private Keyboard deafaultKeyboard;
 	private Keyboard deafaultShiftKeyboard;
 	private Keyboard functionKeyboard;

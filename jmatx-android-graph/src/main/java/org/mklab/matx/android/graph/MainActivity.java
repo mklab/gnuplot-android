@@ -58,8 +58,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 /**
- * @author kawabata
- *　グラフを表示するアクティビティです
+ * @author kawabata 　グラフを表示するアクティビティです
  */
 public class MainActivity extends Activity implements KeyboardListner,
 		AddPredictionMessage {
@@ -72,11 +71,11 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private int _textWidth;
 	private int _x;
 	private int _y;
-	
+
 	private List<String> history = new ArrayList<String>();
-	private int conter;
-	private int historyCounter;
-	
+	private int counter;
+	private int historyIndex;
+
 	private LinearLayout mTerminalLayout;
 	private LinearLayout mPlotLayout;
 	private ViewSwitcher mSwitcher;
@@ -781,12 +780,19 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code); //$NON-NLS-1$
 		resetPrediction();
+		this.historyIndex = this.counter;
 		if ((key_code == KeyEvent.KEYCODE_ENTER)
 				&& (MainActivity.this._ready == true)) {
 			String command = MainActivity.this.editText.getText().toString();
+			this.history.add(command);
+			this.counter++;
+			this.historyIndex = this.counter;
 			MainActivity.this.editText.setText(""); //$NON-NLS-1$
 			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-
+		} else if (key_code == MyKeyboard.KEY_CODE_CURSOR_UP) {
+			upHistory();
+		} else if (key_code == MyKeyboard.KEY_CODE_CURSOR_DOWN) {
+			downHistory();
 		} else {
 			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0),
 					key_code);
@@ -796,7 +802,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText); //$NON-NLS-1$
-
+		this.historyIndex = this.counter;
 		if (this.predictionView.getLastCursorPoint() + this.predictionStrCount != this.editText
 				.getSelectionEnd()) {
 			resetPrediction();
@@ -1164,20 +1170,27 @@ public class MainActivity extends Activity implements KeyboardListner,
 		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
 		this.mTextView.setText(htmlstr);
 	}
-	
 
 	/**
 	 * ヒストリー表示（過去）
 	 */
 	private void upHistory() {
-
+		if (this.history.size() > 0 && this.historyIndex > 0) {
+			this.historyIndex--;
+			this.editText.setText(this.history.get(this.historyIndex));
+			editText.setSelection(this.history.get(this.historyIndex).length());
+		}
 	}
 
 	/**
 	 * ヒストリー表示（未来）
 	 */
 	private void downHistory() {
-	
+		if (this.history.size() > 0 && this.historyIndex < this.counter - 1) {
+			this.historyIndex++;
+			this.editText.setText(this.history.get(this.historyIndex));
+			editText.setSelection(this.history.get(this.historyIndex).length());
+		}
 	}
 
 }
