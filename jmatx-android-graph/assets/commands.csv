@@ -1,4 +1,4 @@
-set,plot,load,save,splot,angles,arrow,autoscale,parametric,border
+replot,set,plot,load,save,splot,angles,arrow,autoscale,parametric,border
 clip,cntrparam,contour,data,style,dummy,format,function,style,grid
 hidden3d,isosample,key,logscale,pm3d,polar,rrange,sample,size,surface
 terminal,tics,ticslevel,ticsscale,time,title,trange,urange,or,vrange

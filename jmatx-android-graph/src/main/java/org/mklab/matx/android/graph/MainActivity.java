@@ -30,6 +30,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
@@ -630,7 +631,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
 						System.out.println("DemoView invalidate"); //$NON-NLS-1$
 						String filePath = saveBmp().getPath();
-						addImageForTexiview(filePath);
+						addImageForTexiview(this._bitmap);
 						// this.demoview.invalidate();
 						// this.mSwitcher.showNext();
 					}
@@ -1107,12 +1108,40 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	};
 
-	private void addImageForTexiview(final String path) {
+	List<Bitmap> graphPaths = new ArrayList<Bitmap>();
+//	private void addImageForTexiview(final String path) {
+//		graphPaths.add(path);
+//		System.out.println("ADD IMAGE");
+//		
+//		
+//
+//		ImageGetter imageGetter = new ImageGetter() {
+//			public Drawable getDrawable(String source) {
+//				Drawable d = Drawable.createFromPath(source);
+//				d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
+//                        0 + MainActivity.this.mScrollView.getHeight());
+//				//d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+//				return d;
+//			}
+//		};
+//
+//		CharSequence htmlstr = Html.fromHtml(
+//				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+//		
+//		System.out.println("HTML STR = " +htmlstr);
+//		CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
+//		this.mTextView.setText(htmlstr);
+//	}
+	private void addImageForTexiview(final Bitmap bitmap) {
 		System.out.println("ADD IMAGE");
+		this.graphPaths.add(bitmap);
 
 		ImageGetter imageGetter = new ImageGetter() {
+			@SuppressWarnings("deprecation")
 			public Drawable getDrawable(String source) {
-				Drawable d = Drawable.createFromPath(path);
+				System.out.println("S.O! " +source);
+				MainActivity.this.graphPaths.get(0);
+				Drawable d = new BitmapDrawable(bitmap);
 				d.setBounds(0, 0, 0 + MainActivity.this.mScrollView.getHeight(),
                         0 + MainActivity.this.mScrollView.getHeight());
 				//d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
@@ -1121,7 +1150,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		};
 
 		CharSequence htmlstr = Html.fromHtml(
-				this.mTextView.getText() + "\n" + "<img src='" + path + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+				this.mTextView.getText() + "\n" + "<img src='" + "1" + "'/>", imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		System.out.println("HTML STR = " +htmlstr);
 		CharSequence str = this.mTextView.getText() + "\n" + htmlstr;
