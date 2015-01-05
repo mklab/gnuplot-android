@@ -41,10 +41,14 @@ import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.InputType;
 import android.text.Spanned;
+import android.text.SpannedString;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -114,8 +118,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		System.out.println("onConfigurationChanged");
-		//setContentView(R.layout.main);
+		System.out.println("onConfigurationChanged"); //$NON-NLS-1$
+		// setContentView(R.layout.main);
 		// my keyboard set
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -124,11 +128,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 		setGrapthSize();
 		addTexiview(null);
 
-
-//		onNewIntent(getIntent());
+		// onNewIntent(getIntent());
 
 	}
-	
+
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
@@ -137,10 +140,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	private void setGrapthSize() {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.terminalLayout);
-		if(layout.getHeight()>layout.getWidth()){
+		if (layout.getHeight() > layout.getWidth()) {
 			this.GRAPTH_SIZE = layout.getWidth();
-		}else{
-			this.GRAPTH_SIZE = layout.getHeight();					
+		} else {
+			this.GRAPTH_SIZE = layout.getHeight();
 		}
 	}
 
@@ -148,11 +151,66 @@ public class MainActivity extends Activity implements KeyboardListner,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		System.out.println("onCreate");
+		System.out.println("onCreate"); //$NON-NLS-1$
 		setContentView(R.layout.main);
 		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
-		
+
 		this.mTextView = (TextView) findViewById(R.id.termWindow);
+		this.mTextView.setTextIsSelectable(true);
+
+		this.mTextView
+				.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+
+					@Override
+					public boolean onPrepareActionMode(ActionMode mode,
+							Menu menu) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+
+					@Override
+					public void onDestroyActionMode(ActionMode mode) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+						menu.removeItem(android.R.id.paste);
+						menu.removeItem(android.R.id.cut);
+						menu.removeItem(android.R.id.copy);
+						// 順にペースト、カット、コピーのメニューアイテムを削除
+						MenuItem saveItem =menu.add(Menu.NONE, 123, Menu.NONE, "Mark Text");
+						// メニュー追加
+						saveItem.setIcon(R.drawable.matx3);
+						// アイコン設定
+						return true;
+					}
+
+					@Override
+					public boolean onActionItemClicked(ActionMode mode,
+							MenuItem item) {
+						String text = MainActivity.this.mTextView.getText().toString();
+
+						// 選択位置のはじめと終わりを取得
+						int start = 0, end = 0;
+						if (MainActivity.this.mTextView.isFocused()) {
+							start = MainActivity.this.mTextView.getSelectionStart();
+							end = MainActivity.this.mTextView.getSelectionEnd();
+						}
+						switch (item.getItemId()) {
+						case 123: 
+							String selectText = text.substring(start, end);
+							System.out.println("SELECT TEXT = " + Html.toHtml(SpannedString.valueOf(selectText)));
+							// 選択した部分への処理を記述
+							return true;
+						default:
+							break;
+						}
+
+						return false;
+					}
+				});
 
 		this.mScrollView = (ScrollView) findViewById(R.id.scrollView);
 
@@ -169,7 +227,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		methodNameLoader();
 		commandNameLoader();
-		
+
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -194,6 +252,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			System.out.println("viewTree"); //$NON-NLS-1$
 			viewTreeObserver
 					.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+						@Override
 						public void onGlobalLayout() {
 							MainActivity.this.mTerminalLayout
 									.getViewTreeObserver()
@@ -245,7 +304,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 		setKeyboard();
 		onNewIntent(getIntent());
-		
+
 	}
 
 	@Override
@@ -289,6 +348,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	public void scrollToBottom() {
 		this.mScrollView.post(new Runnable() {
+			@Override
 			public void run() {
 				MainActivity.this.mScrollView.smoothScrollTo(0,
 						MainActivity.this.mTextView.getBottom());
@@ -352,7 +412,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 			}
 		});
 	}
-
 
 	private void graphics() {
 		Paint paint = new Paint();
@@ -434,7 +493,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this._canvas.drawText(text, x, this._screenHeight - y, paint);
 	}
 
-
 	public void processString(String newTermOut) {
 
 		String modifiedTermOut = this.partialLine + newTermOut;
@@ -482,7 +540,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 					} else if (termCommand[1].equals("justify_text")) { //$NON-NLS-1$
 						justify_text(termCommand[2]);
 					} else if (termCommand[1].equals("init")) { //$NON-NLS-1$
-			
+
 					} else if (termCommand[1].equals("graphics")) { //$NON-NLS-1$
 						graphics();
 					} else if (termCommand[1].equals("text")) { //$NON-NLS-1$
@@ -585,41 +643,49 @@ public class MainActivity extends Activity implements KeyboardListner,
 		return super.onKeyDown(keyCode, event);
 	}
 
+	@Override
 	public void onPress(int primaryCode) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void onRelease(int primaryCode) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void onKey(int primaryCode, int[] keyCodes) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void onText(CharSequence text) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void swipeLeft() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void swipeRight() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void swipeDown() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void swipeUp() {
 		// TODO Auto-generated method stub
 
@@ -654,6 +720,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		return 0;
 	}
 
+	@Override
 	public void sendKeyDown(int key_code) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY CODE " + key_code); //$NON-NLS-1$
@@ -676,6 +743,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	}
 
+	@Override
 	public void sendInputText(String inputText) {
 		// TODO Auto-generated method stub
 		System.out.println("KEY INPUT " + inputText); //$NON-NLS-1$
@@ -738,6 +806,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 					editText.getWindowToken(),
 					InputMethodManager.HIDE_NOT_ALWAYS);
 			editText.setOnTouchListener(new View.OnTouchListener() {
+				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					v.onTouchEvent(event);
 					InputMethodManager imm = (InputMethodManager) v
@@ -774,6 +843,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	}
 
+	@Override
 	public void addFunction(String function, int lastCursorPoint) {
 		String frontStr = this.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
@@ -787,6 +857,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		resetPrediction();
 	}
 
+	@Override
 	public void addVariable(String var, int lastCursorPoint) {
 		String frontStr = this.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
@@ -800,6 +871,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		resetPrediction();
 	}
 
+	@Override
 	public void addCommand(String command, int lastCursorPoint) {
 		String frontStr = this.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
@@ -822,6 +894,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		prediction(""); //$NON-NLS-1$
 	}
 
+	@Override
 	public void cerateMessage(String message) {
 		this.editText.setText(message);
 		Editable result = this.editText.getText();
@@ -1009,14 +1082,14 @@ public class MainActivity extends Activity implements KeyboardListner,
 			return;
 		}
 		ImageGetter imageGetter = new ImageGetter() {
+			@Override
 			@SuppressWarnings({ "deprecation", "boxing" })
 			public Drawable getDrawable(String source) {
 				String[] sources = source.split(" "); //$NON-NLS-1$
 				Drawable d = new BitmapDrawable(
 						MainActivity.this.bitmaps.get(Integer
 								.valueOf(sources[1])));
-				d.setBounds(0, 0,
-						0 + MainActivity.this.GRAPTH_SIZE,
+				d.setBounds(0, 0, 0 + MainActivity.this.GRAPTH_SIZE,
 						0 + MainActivity.this.GRAPTH_SIZE);
 				return d;
 			}
@@ -1050,7 +1123,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (this.history.size() > 0 && this.historyIndex > 0) {
 			this.historyIndex--;
 			this.editText.setText(this.history.get(this.historyIndex));
-			editText.setSelection(this.history.get(this.historyIndex).length());
+			this.editText.setSelection(this.history.get(this.historyIndex)
+					.length());
 		}
 	}
 
@@ -1061,7 +1135,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (this.history.size() > 0 && this.historyIndex < this.counter - 1) {
 			this.historyIndex++;
 			this.editText.setText(this.history.get(this.historyIndex));
-			editText.setSelection(this.history.get(this.historyIndex).length());
+			this.editText.setSelection(this.history.get(this.historyIndex)
+					.length());
 		}
 	}
 
