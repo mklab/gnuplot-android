@@ -94,7 +94,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private String _plotData = ""; //$NON-NLS-1$
 	private MainActivity _sessionParent = null;
 	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
-	int MAX_WIDTH = 0;
+	int GRAPTH_SIZE = 0;
 	TermSession mTermSession;
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
@@ -122,8 +122,30 @@ public class MainActivity extends Activity implements KeyboardListner,
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		this.myKeyboard.init();
 		this.myKeyboard.setKeyboardLisner(this);
+		setGrapthSize();
+		addTexiview(null);
+
+
 //		onNewIntent(getIntent());
 
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		setGrapthSize();
+	}
+
+	private void setGrapthSize() {
+	    // Viewサイズを取得する
+		LinearLayout layout = (LinearLayout) findViewById(R.id.terminalLayout);
+	    
+		if(layout.getHeight()>layout.getWidth()){
+			this.GRAPTH_SIZE = layout.getWidth();
+		}else{
+			this.GRAPTH_SIZE = layout.getHeight();					
+		}
+		System.out.println("GRAPTH SIZE is " + this.GRAPTH_SIZE);
 	}
 
 	/** Called when the activity is first created. */
@@ -153,14 +175,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		methodNameLoader();
 		commandNameLoader();
-
-		// ウィンドウマネージャのインスタンス取得
-		WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-		// ディスプレイのインスタンス生成
-		Display disp = wm.getDefaultDisplay();
-
-		this.MAX_WIDTH = disp.getWidth();
-
+		
 		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View view, int keyCode, KeyEvent event) {
 		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -236,7 +251,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 		setKeyboard();
 		onNewIntent(getIntent());
-
+		
 	}
 
 	@Override
@@ -1176,15 +1191,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 		ImageGetter imageGetter = new ImageGetter() {
 			@SuppressWarnings({ "deprecation", "boxing" })
 			public Drawable getDrawable(String source) {
-				System.out.println("S.O! " + source); //$NON-NLS-1$
 				String[] sources = source.split(" "); //$NON-NLS-1$
-				System.out.println("S.O! Number" + sources[1]); //$NON-NLS-1$
 				Drawable d = new BitmapDrawable(
 						MainActivity.this.bitmaps.get(Integer
 								.valueOf(sources[1])));
 				d.setBounds(0, 0,
-						0 + MainActivity.this.mScrollView.getHeight(),
-						0 + MainActivity.this.mScrollView.getHeight());
+						0 + MainActivity.this.GRAPTH_SIZE,
+						0 + MainActivity.this.GRAPTH_SIZE);
 				return d;
 			}
 		};
