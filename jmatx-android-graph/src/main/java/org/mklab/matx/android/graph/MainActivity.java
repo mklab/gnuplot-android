@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -92,8 +93,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private boolean _plotDataPresent = false;
 	private String _plotData = ""; //$NON-NLS-1$
 	private MainActivity _sessionParent = null;
-	private static final int REQUEST_CODE_GRAPH = 2;
-	private static final int RESULT_CODE_SUB_GRAPH = 101;
 	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
 	int MAX_WIDTH = 0;
 	TermSession mTermSession;
@@ -112,12 +111,26 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private List<String> commandList = new ArrayList<String>();
 	private List<String> methodNameList = new ArrayList<String>();
 	private int prefontsize = 15;
-	private boolean canNotHideKeyborad;
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		System.out.println("onConfigurationChanged");
+		//setContentView(R.layout.main);
+		// my keyboard set
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		this.myKeyboard.init();
+		this.myKeyboard.setKeyboardLisner(this);
+//		onNewIntent(getIntent());
+
+	}
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		System.out.println("onCreate");
 		setContentView(R.layout.main);
 		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
 
@@ -776,12 +789,12 @@ public class MainActivity extends Activity implements KeyboardListner,
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		System.out.println("Keyevent is " + event); //$NON-NLS-1$
 		System.out.println("Keyevent is " + event.getKeyCode()); //$NON-NLS-1$
-	
+
 		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
 			if (hideMyKeyboard() != 0) {
 				System.out.println("no!!"); //$NON-NLS-1$
@@ -791,7 +804,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 		return super.dispatchKeyEvent(event);
 	}
-
 
 	private int hideMyKeyboard() {
 		int visibility = this.myKeyboard.getVisibility();
@@ -1001,7 +1013,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		int predictionCount = 0;
 		int left = 0;
 		int top = 0;
-		String lastMethod = ""; //$NON-NLS-1$
 		// ウィンドウマネージャのインスタンス取得
 		WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
 		// ディスプレイのインスタンス生成
@@ -1187,8 +1198,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		String imageStr = ""; //$NON-NLS-1$
 		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
-		String textViewString = ""; //$NON-NLS-1$
-
 		for (String line : textLines) {
 			if (line.indexOf(BITMAP_MARK) != -1) {
 				imageStr = imageStr + "<BR>" + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

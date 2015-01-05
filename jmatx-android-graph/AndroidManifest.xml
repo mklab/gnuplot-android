@@ -17,6 +17,7 @@
         android:label="@string/app_name" >
         <activity
             android:name="MainActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>

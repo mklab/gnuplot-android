@@ -72,7 +72,10 @@ public class MyKeyboard extends KeyboardView implements
 
 	private Keyboard myKeyboard = null;
 
-	private void init() {
+	/**
+	 * キーボードの情報を初期化します
+	 */
+	public void init() {
 		Log.d("KEYBOARD", "init"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.deafaultKeyboard = new Keyboard(this.parent, R.xml.qwerty);
 		this.deafaultShiftKeyboard = new Keyboard(this.parent,
