@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private int _x;
 	private int _y;
 
-	private List<String> history = new ArrayList<String>();
+	private List<String> history = new ArrayList<>();
 	private int counter;
 	private int historyIndex;
 
@@ -87,13 +87,14 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public TextView promptTextView;
 	public ScrollView mScrollView;
 	public EditText editText;
-	private String consoleLineString = ""; //$NON-NLS-1$
+	//VIewの問題から最初に開業を挟んでおく（要改善）
+	private String consoleLineString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
 	private int _linetype;
 	private int _linewidth;
 	private String _justMode = "LEFT"; //$NON-NLS-1$
 	private boolean _ready = false;
-	private boolean _plotDataPresent = false;
+	boolean _plotDataPresent = false;
 	private String _plotData = ""; //$NON-NLS-1$
 	private MainActivity _sessionParent = null;
 	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
@@ -104,15 +105,15 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private PredictiveView predictionView;
 	float fontSize = 20;
 
-	List<EditText> editTextList = new ArrayList<EditText>();
+	List<EditText> editTextList = new ArrayList<>();
 	private int predictionStrCount;
 
 	private int inputCount;
-	private List<String> predictionVariableList = new ArrayList<String>();
-	private List<String> predictionFunctionList = new ArrayList<String>();
-	private List<String> predictionCommandList = new ArrayList<String>();
-	private List<String> commandList = new ArrayList<String>();
-	private List<String> methodNameList = new ArrayList<String>();
+	private List<String> predictionVariableList = new ArrayList<>();
+	private List<String> predictionFunctionList = new ArrayList<>();
+	private List<String> predictionCommandList = new ArrayList<>();
+	private List<String> commandList = new ArrayList<>();
+	private List<String> methodNameList = new ArrayList<>();
 	private int prefontsize = 15;
 
 	@Override
@@ -126,10 +127,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.myKeyboard.init();
 		this.myKeyboard.setKeyboardLisner(this);
 		setGrapthSize();
-		addTexiview(null);
-
-		// onNewIntent(getIntent());
-
+		this.editText.requestFocus();
 	}
 
 	@Override
@@ -180,7 +178,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 						menu.removeItem(android.R.id.cut);
 						menu.removeItem(android.R.id.copy);
 						// 順にペースト、カット、コピーのメニューアイテムを削除
-						MenuItem saveItem =menu.add(Menu.NONE, 123, Menu.NONE, "Mark Text");
+						MenuItem saveItem = menu.add(Menu.NONE, 123, Menu.NONE,
+								"Mark Text"); //$NON-NLS-1$
 						// メニュー追加
 						saveItem.setIcon(R.drawable.matx3);
 						// アイコン設定
@@ -190,19 +189,58 @@ public class MainActivity extends Activity implements KeyboardListner,
 					@Override
 					public boolean onActionItemClicked(ActionMode mode,
 							MenuItem item) {
-						String text = MainActivity.this.mTextView.getText().toString();
+						String text = MainActivity.this.mTextView.getText()
+								.toString();
 
 						// 選択位置のはじめと終わりを取得
 						int start = 0, end = 0;
 						if (MainActivity.this.mTextView.isFocused()) {
-							start = MainActivity.this.mTextView.getSelectionStart();
+							start = MainActivity.this.mTextView
+									.getSelectionStart();
 							end = MainActivity.this.mTextView.getSelectionEnd();
 						}
 						switch (item.getItemId()) {
-						case 123: 
-							String selectText = text.substring(start, end);
-							System.out.println("SELECT TEXT = " + Html.toHtml(SpannedString.valueOf(selectText)));
-							// 選択した部分への処理を記述
+						case 123:
+							if (start < end) {
+								System.out.println("TARGET : "
+										+ text.substring(start, end));
+								String beforeText = text
+										.substring(0, start + 1);
+								String targetText = text.substring(start, end);
+								int beforeLineCount = 0;
+								int targetLineCount = 0;
+								int s = 0;
+								String line = "\n";
+								String[] beforeLines = beforeText.split(line);
+								String[] targetLines = targetText.split(line);
+								String[] consoleLines = consoleLineString
+										.split(line);
+								for (String st : beforeLines) {
+									beforeLineCount++;
+								}
+								if (beforeLineCount > 0)
+									beforeLineCount--;
+								for (String st : targetLines) {
+									targetLineCount++;
+								}
+
+								System.out.println("BEFORE LINE COUNT = "
+										+ beforeLineCount);
+								System.out.println("TARGET LINE COUNT = "
+										+ targetLineCount);
+								String selectText = consoleLineString
+										.substring(start, end);
+								System.out.println("SELECT TEXT = ");
+
+								for (int i = 0; i < targetLineCount; i++) {
+									System.out
+											.println(i
+													+ "  line  "
+													+ consoleLines[i
+															+ beforeLineCount]);
+								}
+							}
+
 							return true;
 						default:
 							break;
@@ -215,6 +253,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.mScrollView = (ScrollView) findViewById(R.id.scrollView);
 
 		this.editText = (EditText) findViewById(R.id.edit_command);
+		this.editText.requestFocus();
 
 		this.mSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
 
@@ -1073,7 +1112,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	};
 
-	List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+	List<Bitmap> bitmaps = new ArrayList<>();
 
 	private void addTexiview(Bitmap bitmap) {
 		// Bitmap bmp = bitmap;
@@ -1098,7 +1137,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (bitmap != null) {
 			this.bitmaps.add(bitmap);
 			String bitmapNum = String.valueOf(this.bitmaps.size() - 1);
-			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$
+			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$ //$NON-NLS-2$
 					+ bitmapNum + "\n"; //$NON-NLS-1$
 		}
 
@@ -1106,7 +1145,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
 		for (String line : textLines) {
 			if (line.indexOf(BITMAP_MARK) != -1) {
-				imageStr = imageStr + "<BR>" + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				imageStr = imageStr + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						+ "<BR>"; //$NON-NLS-1$
 			} else {
 				imageStr = imageStr + line + "<BR>"; //$NON-NLS-1$
