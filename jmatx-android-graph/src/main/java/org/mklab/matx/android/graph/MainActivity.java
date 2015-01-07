@@ -18,6 +18,8 @@ import org.mklab.matx.android.keyboard.KeyboardListner;
 import org.mklab.matx.android.keyboard.MyKeyboard;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -36,6 +38,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
+import android.provider.MediaStore.MediaColumns;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.ImageGetter;
@@ -87,7 +93,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	public TextView promptTextView;
 	public ScrollView mScrollView;
 	public EditText editText;
-	//VIewの問題から最初に開業を挟んでおく（要改善）
+	// VIewの問題から最初に開業を挟んでおく（要改善）
 	private String consoleLineString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
 	private int _linetype;
@@ -186,6 +192,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 						return true;
 					}
 
+					@SuppressWarnings("boxing")
 					@Override
 					public boolean onActionItemClicked(ActionMode mode,
 							MenuItem item) {
@@ -233,6 +240,15 @@ public class MainActivity extends Activity implements KeyboardListner,
 								System.out.println("SELECT TEXT = ");
 
 								for (int i = 0; i < targetLineCount; i++) {
+									if (consoleLines[i + beforeLineCount]
+											.indexOf(BITMAP_MARK) != -1) {
+										String[] bitmapMarks = consoleLines[i
+												+ beforeLineCount].split(" ");
+										System.out.println("S.O! Crue!! "
+												+ bitmapMarks[1]);
+										createFolderSaveImage(		MainActivity.this.bitmaps.get(Integer
+												.valueOf(bitmapMarks[1])),"TESTTEST" + bitmapMarks[1]);										
+									}
 									System.out
 											.println(i
 													+ "  line  "
@@ -266,22 +282,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		methodNameLoader();
 		commandNameLoader();
-
-		// this.mCmdEditText.setOnKeyListener(new OnKeyListener() {
-		// public boolean onKey(View view, int keyCode, KeyEvent event) {
-		// if (event.getAction() == KeyEvent.ACTION_DOWN) {
-		// if ((keyCode == KeyEvent.KEYCODE_ENTER)
-		// && (MainActivity.this._ready == true)) {
-		// String command = MainActivity.this.mCmdEditText
-		// .getText().toString();
-		//						MainActivity.this.mCmdEditText.setText(""); //$NON-NLS-1$
-		//						MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-		// return true;
-		// }
-		// }
-		// return false;
-		// }
-		// });
 
 		this._sessionParent = this;
 
@@ -344,6 +344,57 @@ public class MainActivity extends Activity implements KeyboardListner,
 		setKeyboard();
 		onNewIntent(getIntent());
 
+	}
+
+	// 新規フォルダを作成し、画像ファイルを保存する
+	void createFolderSaveImage(Bitmap imageToSave, String fileName) {
+		// 新しいフォルダへのパス
+		String folderPath = Environment.getExternalStorageDirectory()
+				+ "/GnuplotMobile/";
+		File folder = new File(folderPath);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		// NewFolderに保存する画像のパス
+		File file = new File(folder, fileName);
+		if (file.exists()) {
+			file.delete();
+		}
+
+		try {
+			FileOutputStream out = new FileOutputStream(file);
+			imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			// これをしないと、新規フォルダは端末をシャットダウンするまで更新されない
+			showFolder(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// ContentProviderに新しいイメージファイルが作られたことを通知する
+	@SuppressWarnings("boxing")
+	private void showFolder(File path) throws Exception {
+		try {
+			ContentValues values = new ContentValues();
+			ContentResolver contentResolver = getApplicationContext()
+					.getContentResolver();
+			values.put(MediaColumns.MIME_TYPE, "image/jpeg");
+			values.put(MediaColumns.DATE_MODIFIED,
+					System.currentTimeMillis() / 1000);
+			values.put(MediaColumns.SIZE, path.length());
+			values.put(MediaColumns.TITLE, path.getName());
+			values.put(MediaColumns.DATA, path.getPath());
+			contentResolver.insert(Media.EXTERNAL_CONTENT_URI, values);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	@Override
@@ -1137,7 +1188,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (bitmap != null) {
 			this.bitmaps.add(bitmap);
 			String bitmapNum = String.valueOf(this.bitmaps.size() - 1);
-			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$ //$NON-NLS-2$
+			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$
 					+ bitmapNum + "\n"; //$NON-NLS-1$
 		}
 
@@ -1145,13 +1196,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
 		for (String line : textLines) {
 			if (line.indexOf(BITMAP_MARK) != -1) {
-				imageStr = imageStr + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				imageStr = imageStr + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ 
 						+ "<BR>"; //$NON-NLS-1$
 			} else {
 				imageStr = imageStr + line + "<BR>"; //$NON-NLS-1$
 			}
 		}
-		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null); //$NON-NLS-1$ //$NON-NLS-2$
+		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null);
 		this.mTextView.setText(htmlstr);
 	}
 
