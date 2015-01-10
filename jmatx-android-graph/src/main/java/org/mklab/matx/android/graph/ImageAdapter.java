@@ -48,9 +48,9 @@ public class ImageAdapter extends BaseAdapter {
 		ImageView imageView;
 		if (convertView == null) { // インスタンスが生成されていない場合、作成
 			imageView = new ImageView(this.mContext);
-			imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-			imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			imageView.setPadding(8, 8, 8, 8);
+			imageView.setLayoutParams(new GridView.LayoutParams(450,450));
+			imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+			imageView.setPadding(2, 2, 2, 2);
 		} else {
 			imageView = (ImageView) convertView;
 		}
