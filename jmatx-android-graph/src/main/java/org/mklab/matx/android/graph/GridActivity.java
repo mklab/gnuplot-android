@@ -29,7 +29,7 @@ import android.widget.Toast;
  */
 public class GridActivity extends Activity {
 
-	private Globals globals;
+	Globals globals;
 	Boolean[] isSelectBmp;
 	private Button saveButton;
 
@@ -82,7 +82,7 @@ public class GridActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+				GridActivity.this.globals.saveBitmap(GridActivity.this.isSelectBmp);
 			}
 		});
 	}

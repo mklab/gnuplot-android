@@ -198,6 +198,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		setContentView(R.layout.main);
 		//グローバル変数を取得
         this.globals = (Globals) this.getApplication();
+        this.globals.setApplictionStartTime();
 		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
 
 		this.mTextView = (TextView) findViewById(R.id.termWindow);
@@ -295,7 +296,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 												+ beforeLineCount].split(" ");
 										System.out.println("S.O! Crue!! "
 												+ bitmapMarks[1]);
-										createFolderSaveImage(
+										MainActivity.this.globals.createFolderSaveImage(
 												MainActivity.this.globals.bitmaps
 														.get(Integer
 																.valueOf(bitmapMarks[1])),
@@ -398,56 +399,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	}
 
-	// 新規フォルダを作成し、画像ファイルを保存する
-	void createFolderSaveImage(Bitmap imageToSave, String fileName) {
-		// 新しいフォルダへのパス
-		String folderPath = Environment.getExternalStorageDirectory()
-				+ "/GnuplotMobile/";
-		File folder = new File(folderPath);
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-		// NewFolderに保存する画像のパス
-		File file = new File(folder, fileName);
-		if (file.exists()) {
-			file.delete();
-		}
-
-		try {
-			FileOutputStream out = new FileOutputStream(file);
-			imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
-			out.flush();
-			out.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			// これをしないと、新規フォルダは端末をシャットダウンするまで更新されない
-			showFolder(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	// ContentProviderに新しいイメージファイルが作られたことを通知する
-	@SuppressWarnings("boxing")
-	private void showFolder(File path) throws Exception {
-		try {
-			ContentValues values = new ContentValues();
-			ContentResolver contentResolver = getApplicationContext()
-					.getContentResolver();
-			values.put(MediaColumns.MIME_TYPE, "image/jpeg");
-			values.put(MediaColumns.DATE_MODIFIED,
-					System.currentTimeMillis() / 1000);
-			values.put(MediaColumns.SIZE, path.length());
-			values.put(MediaColumns.TITLE, path.getName());
-			values.put(MediaColumns.DATA, path.getPath());
-			contentResolver.insert(Media.EXTERNAL_CONTENT_URI, values);
-		} catch (Exception e) {
-			throw e;
-		}
-	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
