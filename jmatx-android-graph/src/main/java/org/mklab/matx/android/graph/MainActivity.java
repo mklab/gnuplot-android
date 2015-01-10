@@ -89,7 +89,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private List<String> history = new ArrayList<>();
 	private int counter;
 	private int historyIndex;
-
+	//グローバル変数
+    Globals globals;
 	private LinearLayout mTerminalLayout;
 	private ViewSwitcher mSwitcher;
 	TextView mTextView;
@@ -180,7 +181,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		switch (item.getItemId()) {
 		case CONTEXT_MENU1_ID:
-			callActivity(this.bitmaps.toArray(new Bitmap[0]));
+//			callActivity(this.bitmaps.toArray(new Bitmap[0]));
 			return true;
 		case CONTEXT_MENU2_ID:
 			// TODO:メニュー押下時の操作
@@ -203,6 +204,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 		super.onCreate(savedInstanceState);
 		System.out.println("onCreate"); //$NON-NLS-1$
 		setContentView(R.layout.main);
+		//グローバル変数を取得
+        this.globals = (Globals) this.getApplication();
 		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
 
 		this.mTextView = (TextView) findViewById(R.id.termWindow);
@@ -274,7 +277,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 								String line = "\n";
 								String[] beforeLines = beforeText.split(line);
 								String[] targetLines = targetText.split(line);
-								String[] consoleLines = consoleLineString
+								String[] consoleLines = MainActivity.this.consoleLineString
 										.split(line);
 								for (String st : beforeLines) {
 									beforeLineCount++;
@@ -289,7 +292,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 										+ beforeLineCount);
 								System.out.println("TARGET LINE COUNT = "
 										+ targetLineCount);
-								String selectText = consoleLineString
+								String selectText = MainActivity.this.consoleLineString
 										.substring(start, end);
 								System.out.println("SELECT TEXT = ");
 
@@ -301,7 +304,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 										System.out.println("S.O! Crue!! "
 												+ bitmapMarks[1]);
 										createFolderSaveImage(
-												MainActivity.this.bitmaps
+												MainActivity.this.globals.bitmaps
 														.get(Integer
 																.valueOf(bitmapMarks[1])),
 												"TESTTEST" + bitmapMarks[1]);
@@ -1224,7 +1227,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	private void addTexiview(Bitmap bitmap) {
 		// Bitmap bmp = bitmap;
-		if (this.bitmaps.size() == 0 && bitmap == null) {
+		if (this.globals.bitmaps.size() == 0 && bitmap == null) {
 			this.mTextView.setText(this.consoleLineString);
 			return;
 		}
@@ -1234,7 +1237,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			public Drawable getDrawable(String source) {
 				String[] sources = source.split(" "); //$NON-NLS-1$
 				Drawable d = new BitmapDrawable(
-						MainActivity.this.bitmaps.get(Integer
+						MainActivity.this.globals.bitmaps.get(Integer
 								.valueOf(sources[1])));
 				d.setBounds(0, 0, 0 + MainActivity.this.GRAPTH_SIZE,
 						0 + MainActivity.this.GRAPTH_SIZE);
@@ -1243,8 +1246,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 		};
 
 		if (bitmap != null) {
-			this.bitmaps.add(bitmap);
-			String bitmapNum = String.valueOf(this.bitmaps.size() - 1);
+			this.globals.bitmaps.add(bitmap);
+			String bitmapNum = String.valueOf(this.globals.bitmaps.size() - 1);
 			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$
 					+ bitmapNum + "\n"; //$NON-NLS-1$
 		}
