@@ -84,8 +84,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private List<String> history = new ArrayList<>();
 	private int counter;
 	private int historyIndex;
-	//グローバル変数
-    Globals globals;
+	// グローバル変数
+	Globals globals;
 	private LinearLayout mTerminalLayout;
 	private ViewSwitcher mSwitcher;
 	TextView mTextView;
@@ -162,10 +162,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		// コンテキストメニューの設定
-		menu.setHeaderTitle("メニュータイトル");
+		menu.setHeaderTitle("Menu");
 		// Menu.add(int groupId, int itemId, int order, CharSequence title)
-		menu.add(0, CONTEXT_MENU1_ID, 0, "メニュー1");
-		menu.add(0, CONTEXT_MENU2_ID, 0, "メニュー2");
+		menu.add(0, CONTEXT_MENU1_ID, 0, "Save the Graph");
 	}
 
 	@Override
@@ -176,19 +175,15 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		switch (item.getItemId()) {
 		case CONTEXT_MENU1_ID:
-			  Intent intent = new Intent(this, GridActivity.class);
-			  intent.setAction(Intent.ACTION_VIEW);
-			  startActivity(intent);
+			Intent intent = new Intent(this, GridActivity.class);
+			intent.setAction(Intent.ACTION_VIEW);
+			startActivity(intent);
 
-			return true;
-		case CONTEXT_MENU2_ID:
-			// TODO:メニュー押下時の操作
 			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
-
 
 	/** Called when the activity is first created. */
 	@Override
@@ -196,9 +191,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 		super.onCreate(savedInstanceState);
 		System.out.println("onCreate"); //$NON-NLS-1$
 		setContentView(R.layout.main);
-		//グローバル変数を取得
-        this.globals = (Globals) this.getApplication();
-        this.globals.setApplictionStartTime();
+		// グローバル変数を取得
+		this.globals = (Globals) this.getApplication();
+		this.globals.setApplictionStartTime();
 		this.mTerminalLayout = (LinearLayout) findViewById(R.id.terminalLayout);
 
 		this.mTextView = (TextView) findViewById(R.id.termWindow);
@@ -296,11 +291,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 												+ beforeLineCount].split(" ");
 										System.out.println("S.O! Crue!! "
 												+ bitmapMarks[1]);
-										MainActivity.this.globals.createFolderSaveImage(
-												MainActivity.this.globals.bitmaps
-														.get(Integer
-																.valueOf(bitmapMarks[1])),
-												"TESTTEST" + bitmapMarks[1]);
+										MainActivity.this.globals
+												.createFolderSaveImage(
+														MainActivity.this.globals.bitmaps
+																.get(Integer
+																		.valueOf(bitmapMarks[1])),
+														"TESTTEST"
+																+ bitmapMarks[1]);
 									}
 									System.out
 											.println(i
@@ -398,7 +395,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		onNewIntent(getIntent());
 
 	}
-
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -1165,8 +1161,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 			add("0"); //$NON-NLS-1$
 		}
 	};
-
-	
 
 	private void addTexiview(Bitmap bitmap) {
 		// Bitmap bmp = bitmap;
