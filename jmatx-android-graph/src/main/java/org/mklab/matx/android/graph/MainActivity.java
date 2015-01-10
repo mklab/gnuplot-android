@@ -92,19 +92,19 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	private LinearLayout mTerminalLayout;
 	private ViewSwitcher mSwitcher;
-	public TextView mTextView;
-	public TextView promptTextView;
-	public ScrollView mScrollView;
-	public EditText editText;
+	TextView mTextView;
+	TextView promptTextView;
+	ScrollView mScrollView;
+	EditText editText;
 	// VIewの問題から最初に開業を挟んでおく（要改善）
 	private String consoleLineString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
-	private int _linetype;
-	private int _linewidth;
-	private String _justMode = "LEFT"; //$NON-NLS-1$
-	private boolean _ready = false;
+	int _linetype;
+	int _linewidth;
+	String _justMode = "LEFT"; //$NON-NLS-1$
+	boolean _ready = false;
 	boolean _plotDataPresent = false;
-	private String _plotData = ""; //$NON-NLS-1$
+	String _plotData = ""; //$NON-NLS-1$
 	private MainActivity _sessionParent = null;
 	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
 	int GRAPTH_SIZE = 0;
@@ -180,7 +180,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		switch (item.getItemId()) {
 		case CONTEXT_MENU1_ID:
-			// TODO:メニュー押下時の操作
+			callActivity(this.bitmaps.toArray(new Bitmap[0]));
 			return true;
 		case CONTEXT_MENU2_ID:
 			// TODO:メニュー押下時の操作
@@ -188,6 +188,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 		default:
 			return super.onContextItemSelected(item);
 		}
+	}
+
+	private void callActivity(Bitmap[] bmp) {
+	  Intent intent = new Intent(this, GridActivity.class);
+	  intent.putExtra("IMAGELIST", bmp);
+	  intent.setAction(Intent.ACTION_VIEW);
+	  startActivity(intent);
 	}
 
 	/** Called when the activity is first created. */
@@ -201,14 +208,14 @@ public class MainActivity extends Activity implements KeyboardListner,
 		this.mTextView = (TextView) findViewById(R.id.termWindow);
 		this.mTextView.setTextIsSelectable(true);
 		registerForContextMenu(this.mTextView);
-//		mTextView.setOnTouchListener(new View.OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View v, MotionEvent event) {
-//				mTouchX = (int) event.getX();
-//				mTouchY = (int) event.getY();
-//				return false;
-//			}
-//		});
+		// mTextView.setOnTouchListener(new View.OnTouchListener() {
+		// @Override
+		// public boolean onTouch(View v, MotionEvent event) {
+		// mTouchX = (int) event.getX();
+		// mTouchY = (int) event.getY();
+		// return false;
+		// }
+		// });
 		this.mTextView
 				.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
 
@@ -1086,7 +1093,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 			for (final String c : this.methodNameList) {
 				if (c.startsWith(input)) {
 					this.predictionFunctionList.add(c);
-					int leftSize = c.length() * (int) this.prefontsize;
+					int leftSize = c.length() * this.prefontsize;
 					// 二段目に移動させる
 					if ((left + leftSize) > widthSize) {
 						top += 1;
@@ -1213,7 +1220,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	};
 
-	List<Bitmap> bitmaps = new ArrayList<>();
+	
 
 	private void addTexiview(Bitmap bitmap) {
 		// Bitmap bmp = bitmap;
