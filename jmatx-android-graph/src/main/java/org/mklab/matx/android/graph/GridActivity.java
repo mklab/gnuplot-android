@@ -1,7 +1,10 @@
 package org.mklab.matx.android.graph;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,13 +19,19 @@ import android.widget.Toast;
  */
 public class GridActivity extends Activity {
 
+	private Globals globals;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	    setContentView(R.layout.main);
+	    setContentView(R.layout.activity_grid);
+		//グローバル変数を取得
+        this.globals = (Globals) this.getApplication();
 
 	    GridView gridview = (GridView) findViewById(R.id.gridview);
-	    gridview.setAdapter(new ImageAdapter(this));
+	    ImageAdapter imageAdapter = new ImageAdapter(this);
+	    imageAdapter.setBitmap(this.globals.bitmaps);
+	    gridview.setAdapter(imageAdapter);
 
 	    gridview.setOnItemClickListener(new OnItemClickListener() {
 
@@ -53,4 +62,6 @@ public class GridActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+
 }

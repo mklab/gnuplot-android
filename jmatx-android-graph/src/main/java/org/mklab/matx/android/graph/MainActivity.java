@@ -28,7 +28,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -39,15 +38,12 @@ import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
 import android.provider.MediaStore.MediaColumns;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.InputType;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -60,7 +56,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
@@ -181,7 +176,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 		switch (item.getItemId()) {
 		case CONTEXT_MENU1_ID:
-//			callActivity(this.bitmaps.toArray(new Bitmap[0]));
+			  Intent intent = new Intent(this, GridActivity.class);
+			  intent.setAction(Intent.ACTION_VIEW);
+			  startActivity(intent);
+
 			return true;
 		case CONTEXT_MENU2_ID:
 			// TODO:メニュー押下時の操作
@@ -191,12 +189,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		}
 	}
 
-	private void callActivity(Bitmap[] bmp) {
-	  Intent intent = new Intent(this, GridActivity.class);
-	  intent.putExtra("IMAGELIST", bmp);
-	  intent.setAction(Intent.ACTION_VIEW);
-	  startActivity(intent);
-	}
 
 	/** Called when the activity is first created. */
 	@Override

@@ -1,17 +1,22 @@
 package org.mklab.matx.android.graph;
 
+import java.util.List;
+
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 
 /**
  * @author kawabata グリッドビューのたのアダプタです
  */
 public class ImageAdapter extends BaseAdapter {
 	private Context mContext;
+	private List<Bitmap> bitmaps;
 
 	/**
 	 * コンストラクタです
@@ -24,7 +29,7 @@ public class ImageAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return this.mThumbIds.length;
+		return this.bitmaps.size();
 	}
 
 	@Override
@@ -38,7 +43,6 @@ public class ImageAdapter extends BaseAdapter {
 	}
 
 	// Adapterから参照される新しいImageViewを作成
-	@SuppressWarnings("boxing")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ImageView imageView;
@@ -50,12 +54,18 @@ public class ImageAdapter extends BaseAdapter {
 		} else {
 			imageView = (ImageView) convertView;
 		}
-
-		imageView.setImageResource(this.mThumbIds[position]);
+		imageView.setImageBitmap(this.bitmaps.get(position));
 		return imageView;
 	}
 
-	// references to our images
-	private Integer[] mThumbIds = { R.drawable.icon, R.drawable.matx3,
-			R.drawable.test };
+
+	/**
+	 * @param bitmaps
+	 * GridViewに表示するbitmapのListをセットします
+	 */
+	public void setBitmap(List<Bitmap> bitmaps) {
+		// TODO Auto-generated method stub
+		this.bitmaps = bitmaps;
+		System.out.println("GETBITMAP!! NUM= " + this.bitmaps.size());
+	}
 }
