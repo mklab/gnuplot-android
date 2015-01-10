@@ -181,8 +181,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 		switch (item.getItemId()) {
 		case CONTEXT_MENU1_ID:
 			// TODO:メニュー押下時の操作
-			mTextView.setSelected(true);		
-		
 			return true;
 		case CONTEXT_MENU2_ID:
 			// TODO:メニュー押下時の操作
