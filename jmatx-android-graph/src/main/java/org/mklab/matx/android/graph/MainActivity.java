@@ -407,7 +407,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (this._plotData != null && this._plotData.length() > 0) {
 			this._isCalledIntent = true;
 			// mPlotLayout.setVisibility(View.INVISIBLE);
-			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			//this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			String fileName = "tempPlotData.csv"; //$NON-NLS-1$
 			OutputStreamWriter out;
 			try {
