@@ -664,15 +664,6 @@ public class MainActivity extends Activity implements KeyboardListner,
 	 * インテント呼び出しがあった場合、ファイルパスをインテントに乗せて呼び出し元のアプリケーションに送ります
 	 */
 	public void sendBitmap() {
-		// if (this._isCalledIntent) {
-		// Intent intent_ret = new Intent();
-		// Bundle b = new Bundle();
-		//			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
-		//			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
-		// // intent_ret.setType("image/*");
-		// setResult(RESULT_OK, intent_ret);
-		// finish();
-		// }
 		saveBmp().getPath();
 
 		if (this._isCalledIntent) {
