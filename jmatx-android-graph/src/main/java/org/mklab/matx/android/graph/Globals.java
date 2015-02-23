@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @author kawabata グローバル変数を定義するクラスです
@@ -48,6 +49,7 @@ public class Globals extends Application {
 
 	public void createFolderSaveImage(Bitmap imageToSave, int i) {
 		createFolderSaveImage(imageToSave, this.startTime + "_" + (i + 1)); //$NON-NLS-1$
+
 	}
 
 	// 新規フォルダを作成し、画像ファイルを保存する
@@ -70,6 +72,7 @@ public class Globals extends Application {
 			imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
 			out.flush();
 			out.close();
+			Toast.makeText(this, file.getPath(), Toast.LENGTH_SHORT).show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

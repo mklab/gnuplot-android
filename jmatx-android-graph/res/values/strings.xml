@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Gnuplot-android</string>
-    <string name="title_activity_grid">GridActivity</string>
+    <string name="app_name">Gnuplot Mobile</string>
+    <string name="title_activity_grid">Save Image</string>
+    <string name="title_activity_assets">Load Sample File</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

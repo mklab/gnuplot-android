@@ -18,8 +18,6 @@ import org.mklab.matx.android.keyboard.KeyboardListner;
 import org.mklab.matx.android.keyboard.MyKeyboard;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -36,10 +34,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore.Images.Media;
-import android.provider.MediaStore.MediaColumns;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.ImageGetter;
@@ -64,6 +61,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 /**
@@ -122,6 +120,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 	private int prefontsize = 15;
 	protected int mTouchX;
 	protected int mTouchY;
+	private static final int FILE_RESULT_CODE = 54321;
+	private static final int ASSETS_RESULT_CODE = 4321;
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -154,6 +154,8 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	static final int CONTEXT_MENU1_ID = 0;
 	static final int CONTEXT_MENU2_ID = 1;
+	private static final int MENU_LOAD_KEY = 1;
+	private static final int MENU_ASSETS_KEY = 2;
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
@@ -162,9 +164,40 @@ public class MainActivity extends Activity implements KeyboardListner,
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		// コンテキストメニューの設定
-		menu.setHeaderTitle("Menu");
+		menu.setHeaderTitle("Menu"); //$NON-NLS-1$
 		// Menu.add(int groupId, int itemId, int order, CharSequence title)
-		menu.add(0, CONTEXT_MENU1_ID, 0, "Save the Graph");
+		menu.add(0, CONTEXT_MENU1_ID, 0, "Save the Graph"); //$NON-NLS-1$
+		menu.add(0, MENU_LOAD_KEY, 0, "Load Script File"); //$NON-NLS-1$
+		menu.add(0, MENU_ASSETS_KEY, 0, "Load Sample Script File"); //$NON-NLS-1$
+	}
+
+	@Override
+	@SuppressWarnings("null")
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		System.out.println("onActivityResult"); //$NON-NLS-1$
+		System.out.println(requestCode);
+		if (requestCode == FILE_RESULT_CODE) {
+			Uri fileUri = (data != null ? (Uri) data.getData() : null);
+			if (fileUri != null) { // Everything went well => edit the file
+				String filePath = fileUri.getPath();
+				Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
+				Log.d("OIFILE Log", "filepath = " + filePath); //$NON-NLS-1$ //$NON-NLS-2$
+				Log.d("OIFILE Log", "Succes load file !! " + filePath); //$NON-NLS-1$ //$NON-NLS-2$
+				String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				this.history.add(command);
+				this.counter++;
+				this.historyIndex = this.counter;
+				MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
+
+			} else { // Error occurred
+				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show(); //$NON-NLS-1$
+			}
+		}else if(requestCode == ASSETS_RESULT_CODE){
+			String filePath = Environment.getExternalStorageDirectory()
+					+ "/GnuplotMobile/sample.gnu"; //$NON-NLS-1$
+			String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
+		}
 	}
 
 	@Override
@@ -178,7 +211,12 @@ public class MainActivity extends Activity implements KeyboardListner,
 			Intent intent = new Intent(this, GridActivity.class);
 			intent.setAction(Intent.ACTION_VIEW);
 			startActivity(intent);
-
+			return true;
+		case MENU_LOAD_KEY:
+			openFileManeger();
+			return true;
+		case MENU_ASSETS_KEY:
+			callAssetsActivity();
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -225,18 +263,18 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 					@Override
 					public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-						menu.removeItem(android.R.id.paste);
+						// menu.removeItem(android.R.id.paste);
 						menu.removeItem(android.R.id.cut);
-						menu.removeItem(android.R.id.copy);
+						// menu.removeItem(android.R.id.copy);
 						// 順にペースト、カット、コピーのメニューアイテムを削除
 						MenuItem saveItem = menu.add(Menu.NONE, 123, Menu.NONE,
 								"Mark Text"); //$NON-NLS-1$
 						// メニュー追加
-						saveItem.setIcon(R.drawable.matx3);
+						saveItem.setIcon(R.drawable.saveicon);
 						// アイコン設定
 						return true;
 					}
-
+					
 					@SuppressWarnings("boxing")
 					@Override
 					public boolean onActionItemClicked(ActionMode mode,
@@ -254,7 +292,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 						switch (item.getItemId()) {
 						case 123:
 							if (start < end) {
-								System.out.println("TARGET : "
+								System.out.println("TARGET : " //$NON-NLS-1$
 										+ text.substring(start, end));
 								String beforeText = text
 										.substring(0, start + 1);
@@ -262,7 +300,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 								int beforeLineCount = 0;
 								int targetLineCount = 0;
 								int s = 0;
-								String line = "\n";
+								String line = "\n"; //$NON-NLS-1$
 								String[] beforeLines = beforeText.split(line);
 								String[] targetLines = targetText.split(line);
 								String[] consoleLines = MainActivity.this.consoleLineString
@@ -276,32 +314,32 @@ public class MainActivity extends Activity implements KeyboardListner,
 									targetLineCount++;
 								}
 
-								System.out.println("BEFORE LINE COUNT = "
+								System.out.println("BEFORE LINE COUNT = " //$NON-NLS-1$
 										+ beforeLineCount);
-								System.out.println("TARGET LINE COUNT = "
+								System.out.println("TARGET LINE COUNT = " //$NON-NLS-1$
 										+ targetLineCount);
 								String selectText = MainActivity.this.consoleLineString
 										.substring(start, end);
-								System.out.println("SELECT TEXT = ");
+								System.out.println("SELECT TEXT = "); //$NON-NLS-1$
 
 								for (int i = 0; i < targetLineCount; i++) {
 									if (consoleLines[i + beforeLineCount]
 											.indexOf(BITMAP_MARK) != -1) {
 										String[] bitmapMarks = consoleLines[i
-												+ beforeLineCount].split(" ");
-										System.out.println("S.O! Crue!! "
+												+ beforeLineCount].split(" "); //$NON-NLS-1$
+										System.out.println("S.O! Crue!! " //$NON-NLS-1$
 												+ bitmapMarks[1]);
 										MainActivity.this.globals
 												.createFolderSaveImage(
 														MainActivity.this.globals.bitmaps
 																.get(Integer
 																		.valueOf(bitmapMarks[1])),
-														"TESTTEST"
+														"TESTTEST" //$NON-NLS-1$
 																+ bitmapMarks[1]);
 									}
 									System.out
 											.println(i
-													+ "  line  "
+													+ "  line  " //$NON-NLS-1$
 													+ consoleLines[i
 															+ beforeLineCount]);
 								}
@@ -407,7 +445,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		if (this._plotData != null && this._plotData.length() > 0) {
 			this._isCalledIntent = true;
 			// mPlotLayout.setVisibility(View.INVISIBLE);
-			//this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			String fileName = "tempPlotData.csv"; //$NON-NLS-1$
 			OutputStreamWriter out;
 			try {
@@ -423,6 +461,47 @@ public class MainActivity extends Activity implements KeyboardListner,
 			}
 		}
 
+	}
+
+	// オプションメニューが最初に呼び出される時に1度だけ呼び出されます
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, MENU_LOAD_KEY, Menu.FIRST, "load script file").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(Menu.NONE, MENU_ASSETS_KEY, Menu.FIRST, "load sample script file").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_ALWAYS);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		boolean ret = true;
+
+		switch (item.getItemId()) {
+		case MENU_LOAD_KEY:
+			openFileManeger();
+			//			onOIFileManagerOptionsItemSelected(4, "Choose file to open"); //$NON-NLS-1$
+			break;
+		case MENU_ASSETS_KEY:
+			callAssetsActivity();
+			break;
+		default:
+			ret = super.onOptionsItemSelected(item);
+			break;
+		}
+		return ret;
+	}
+
+	private void openFileManeger() {
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setAction(Intent.ACTION_GET_CONTENT);
+		intent.setType("*/*"); //$NON-NLS-1$
+		startActivityForResult(intent, FILE_RESULT_CODE);
+	}
+	
+	private void callAssetsActivity(){
+		Intent intent = new Intent(this, AssetsActivity.class);
+	    startActivityForResult(intent, ASSETS_RESULT_CODE);
 	}
 
 	private void setKeyboard() {
@@ -664,6 +743,15 @@ public class MainActivity extends Activity implements KeyboardListner,
 	 * インテント呼び出しがあった場合、ファイルパスをインテントに乗せて呼び出し元のアプリケーションに送ります
 	 */
 	public void sendBitmap() {
+		// if (this._isCalledIntent) {
+		// Intent intent_ret = new Intent();
+		// Bundle b = new Bundle();
+		//			b.putParcelable("data", this._bitmap); //$NON-NLS-1$
+		//			intent_ret.putExtra("ReturnData", b); //$NON-NLS-1$
+		// // intent_ret.setType("image/*");
+		// setResult(RESULT_OK, intent_ret);
+		// finish();
+		// }
 		saveBmp().getPath();
 
 		if (this._isCalledIntent) {
