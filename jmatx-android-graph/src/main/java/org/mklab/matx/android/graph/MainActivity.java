@@ -192,7 +192,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 			} else { // Error occurred
 				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show(); //$NON-NLS-1$
 			}
-		}else if(requestCode == ASSETS_RESULT_CODE){
+		}else if(requestCode == ASSETS_RESULT_CODE && data !=null){
+			System.out.println(data);
+			System.out.println(data.getAction());
 			String filePath = Environment.getExternalStorageDirectory()
 					+ "/GnuplotMobile/sample.gnu"; //$NON-NLS-1$
 			String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

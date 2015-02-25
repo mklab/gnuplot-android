@@ -89,6 +89,8 @@ public class AssetsActivity extends Activity {
 						AssetsActivity.this,
 						android.R.layout.simple_list_item_1,
 						loadAssetsFolder(this.correntPath)));
+			}else{
+				finish();
 			}
 			return false;
 		}
@@ -150,7 +152,6 @@ public class AssetsActivity extends Activity {
 		data.putExtras(bundle);
 		setResult(RESULT_OK, data);
 		finish();
-
 	}
 
 }
