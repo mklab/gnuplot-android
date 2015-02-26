@@ -1,7 +1,0 @@
-# set terminal png transparent nocrop enhanced font arial 8 size 420,320 
-# set output 'fillbetween.1.png'
-set style data lines
-set title "Fill area between two curves" 
-set xrange [ 10.0000 : * ] noreverse nowriteback  # (currently [:10.0000] )
-set yrange [ 0.00000 : 175.000 ] noreverse nowriteback
-plot 'silver.dat' u 1:2:3 w filledcu,       '' u 1:2 lt -1 notitle, '' u 1:3 lt -1 notitle
