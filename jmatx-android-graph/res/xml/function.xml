@@ -15,7 +15,7 @@
 ** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 ** See the License for the specific language governing permissions and 
 ** limitations under the License.
-*/
+*/
 -->
 
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
@@ -232,20 +232,21 @@
         <Key
             android:codes="-121"
             android:keyLabel="abc"
-            android:keyWidth="30%p" />
+            android:keyWidth="15%p" />
         <Key
             android:codes="62"
             android:isRepeatable="true"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:keyWidth="16%p" />
+            android:keyWidth="29%p" />
+        
         <Key
             android:keyLabel=","
             android:keyOutputText=","
-            android:keyWidth="4%p" />
+            android:keyWidth="5%p" />
         <Key
             android:keyLabel="."
             android:keyOutputText="."
-            android:keyWidth="4%p"
+            android:keyWidth="5%p"
             android:popupKeyboard="@xml/dots" />
         <Key
             android:codes="-1"

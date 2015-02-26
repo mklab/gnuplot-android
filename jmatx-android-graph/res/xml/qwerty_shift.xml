@@ -15,7 +15,7 @@
 ** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 ** See the License for the specific language governing permissions and 
 ** limitations under the License.
-*/
+*/
 -->
 
 <Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,55 +30,35 @@
         <Key
             android:keyEdgeFlags="left"
             android:keyLabel="1"
-            android:keyOutputText="1"
-            android:popupCharacters="!"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="1" />
         <Key
             android:keyLabel="2"
-            android:keyOutputText="2"
-            android:popupCharacters="\@"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="2" />
         <Key
             android:keyLabel="3"
-            android:keyOutputText="3"
-            android:popupCharacters="#"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="3" />
         <Key
             android:keyLabel="4"
-            android:keyOutputText="4"
-            android:popupCharacters="$"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="4" />
         <Key
             android:keyLabel="5"
-            android:keyOutputText="5"
-            android:popupCharacters="%"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="5" />
         <Key
             android:keyLabel="6"
-            android:keyOutputText="6"
-            android:popupCharacters="^"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="6" />
         <Key
             android:keyLabel="7"
-            android:keyOutputText="7"
-            android:popupCharacters="&amp;"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="7" />
         <Key
             android:keyLabel="8"
-            android:keyOutputText="8"
-            android:popupCharacters="*"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="8" />
         <Key
             android:keyLabel="9"
-            android:keyOutputText="9"
-            android:popupCharacters="("
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="9" />
         <Key
             android:keyEdgeFlags="right"
             android:keyLabel="0"
-            android:keyOutputText="0"
-            android:popupCharacters=")"
-            android:popupKeyboard="@xml/popup_template" />
+            android:keyOutputText="0" />
     </Row>
     <Row
         android:horizontalGap="0.5%p"
@@ -90,8 +70,8 @@
             android:keyLabel="&quot;&quot;"
             android:keyOutputText="&quot;&quot;" />
         <Key
-            android:keyLabel="^"
-            android:keyOutputText="^" />
+            android:keyLabel="&apos;"
+            android:keyOutputText="&apos;" />
         <Key
             android:keyLabel="/"
             android:keyOutputText="/" />
@@ -258,22 +238,25 @@
             android:keyWidth="10%p" />
         <Key
             android:codes="-144"
-            android:keyLabel="syms"
-            android:keyWidth="30%p" />
+            android:keyIcon="@drawable/sym_keyboard_symbol"
+            android:keyWidth="15%p" />
         <Key
             android:codes="62"
             android:isRepeatable="true"
             android:keyIcon="@drawable/sym_keyboard_space"
-            android:keyWidth="16%p" />
+            android:keyWidth="20%p" />
         <Key
             android:keyLabel=","
             android:keyOutputText=","
-            android:keyWidth="4%p" />
+            android:keyWidth="6%p" />
         <Key
             android:keyLabel="."
             android:keyOutputText="."
-            android:keyWidth="4%p"
-            android:popupKeyboard="@xml/dots" />
+            android:keyWidth="6%p" />
+        <Key
+            android:keyLabel=":"
+            android:keyOutputText=":"
+            android:keyWidth="6.5%p" />
         <Key
             android:codes="-4"
             android:isRepeatable="true"
