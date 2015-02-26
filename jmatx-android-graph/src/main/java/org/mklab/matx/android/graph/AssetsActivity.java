@@ -6,6 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -29,7 +35,7 @@ public class AssetsActivity extends Activity {
 	ListView listView;
 	String correntPath = "sample"; //$NON-NLS-1$
 	private AssetManager assetManager;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,9 +66,11 @@ public class AssetsActivity extends Activity {
 											android.R.layout.simple_list_item_1,
 											nextFileList));
 						} else {
-							copyAssetsFiles(AssetsActivity.this.correntPath,
+							copyAssetsFiles(
+									AssetsActivity.this.correntPath,
 									item,
-									new File(Environment.getExternalStorageDirectory()
+									new File(Environment
+											.getExternalStorageDirectory()
 											+ File.separator + "GnuplotMobile")); //$NON-NLS-1$
 						}
 					}
@@ -70,13 +78,58 @@ public class AssetsActivity extends Activity {
 	}
 
 	String[] loadAssetsFolder(String folderName) {
-		String[] fileList = null;
+		String[] files = null;
+		ArrayList<String> fileList = new ArrayList<>();
 		try {
-			fileList = this.assetManager.list(folderName);
+			files = this.assetManager.list(folderName);
+			fileList = new ArrayList<>(Arrays.asList(files));
+			Collections.sort(fileList);
+			Collections.sort(fileList, new NomComparator());
+			files = (String[]) fileList.toArray(new String[fileList.size()]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return fileList;
+
+		return files;
+	}
+
+	public class NomComparator implements Comparator<String> {
+
+		// 比較メソッド（データクラスを比較して-1, 0, 1を返すように記述する）
+		public int compare(String a, String b) {
+			String[] aList = a.split(".");
+			String[] bList = b.split(".");
+			System.out.println("A :" + a);
+			System.out.println("aList" + aList.length);
+
+			System.out.println(a.lastIndexOf("."));
+			if (a.lastIndexOf(".") > 0) {
+				System.out.println();
+			}
+
+			if (a.lastIndexOf(".") > 0 && b.lastIndexOf(".") > 0) {
+				@SuppressWarnings("boxing")
+				int no1 = Integer.valueOf((String) a.subSequence(
+						a.indexOf(".") + 1, a.lastIndexOf(".")));
+				@SuppressWarnings("boxing")
+				int no2 = Integer.valueOf((String) b.subSequence(
+						a.indexOf(".") + 1, b.lastIndexOf(".")));
+				System.out.println("NO1:no2" + no1 + " : " + no2);
+				if (no1 > no2) {
+					return 1;
+
+				} else if (no1 == no2) {
+					return 0;
+
+				} else {
+					return -1;
+
+				}
+
+			}
+			return 0;
+		}
+
 	}
 
 	@Override
@@ -89,7 +142,7 @@ public class AssetsActivity extends Activity {
 						AssetsActivity.this,
 						android.R.layout.simple_list_item_1,
 						loadAssetsFolder(this.correntPath)));
-			}else{
+			} else {
 				finish();
 			}
 			return false;
@@ -137,7 +190,7 @@ public class AssetsActivity extends Activity {
 			}
 			fileOutputStream.close();
 			inputStream.close();
-			
+
 			finishActivity();
 		} catch (IOException e) {
 			e.printStackTrace();
