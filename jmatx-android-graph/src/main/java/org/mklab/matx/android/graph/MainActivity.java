@@ -192,13 +192,13 @@ public class MainActivity extends Activity implements KeyboardListner,
 			} else { // Error occurred
 				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show(); //$NON-NLS-1$
 			}
-		}else if(requestCode == ASSETS_RESULT_CODE && data !=null){
-			System.out.println(data);
-			System.out.println(data.getAction());
+		} else if (requestCode == ASSETS_RESULT_CODE && data != null) {
+			MainActivity.this.mTermSession.write("reset \n"); //$NON-NLS-1$
 			String filePath = Environment.getExternalStorageDirectory()
 					+ "/GnuplotMobile/sample.gnu"; //$NON-NLS-1$
 			String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			MainActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
+			MainActivity.this.mTermSession.write("reset \n"); //$NON-NLS-1$
 		}
 	}
 
@@ -276,7 +276,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 						// アイコン設定
 						return true;
 					}
-					
+
 					@SuppressWarnings("boxing")
 					@Override
 					public boolean onActionItemClicked(ActionMode mode,
@@ -469,8 +469,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, MENU_LOAD_KEY, Menu.FIRST, "load script file").setShowAsAction( //$NON-NLS-1$
-				MenuItem.SHOW_AS_ACTION_ALWAYS);
-		menu.add(Menu.NONE, MENU_ASSETS_KEY, Menu.FIRST, "load sample script file").setShowAsAction( //$NON-NLS-1$
+						MenuItem.SHOW_AS_ACTION_ALWAYS);
+		menu.add(Menu.NONE, MENU_ASSETS_KEY, Menu.FIRST,
+				"load sample script file").setShowAsAction( //$NON-NLS-1$
 				MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -500,10 +501,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 		intent.setType("*/*"); //$NON-NLS-1$
 		startActivityForResult(intent, FILE_RESULT_CODE);
 	}
-	
-	private void callAssetsActivity(){
+
+	private void callAssetsActivity() {
 		Intent intent = new Intent(this, AssetsActivity.class);
-	    startActivityForResult(intent, ASSETS_RESULT_CODE);
+		startActivityForResult(intent, ASSETS_RESULT_CODE);
 	}
 
 	private void setKeyboard() {
