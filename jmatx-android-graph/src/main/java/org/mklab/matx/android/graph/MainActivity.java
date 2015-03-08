@@ -473,11 +473,16 @@ public class MainActivity extends Activity implements KeyboardListner,
 	// オプションメニューが最初に呼び出される時に1度だけ呼び出されます
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, MENU_LOAD_KEY, Menu.FIRST, "load script file").setShowAsAction( //$NON-NLS-1$
-						MenuItem.SHOW_AS_ACTION_ALWAYS);
-		menu.add(Menu.NONE, MENU_ASSETS_KEY, Menu.FIRST,
-				"load sample script file").setShowAsAction( //$NON-NLS-1$
-				MenuItem.SHOW_AS_ACTION_ALWAYS);
+		
+		menu.add(0, CONTEXT_MENU1_ID, 0, "Save the Graph").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER); 
+		menu.add(0, MENU_LOAD_KEY, 0, "Load Script File").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER); 
+		menu.add(0, MENU_ASSETS_KEY, 0, "Load Sample Script File").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER); 
+		menu.add(0, MENU_EDITOR_KEY, 0, "Open Editor").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER); 
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -486,18 +491,23 @@ public class MainActivity extends Activity implements KeyboardListner,
 		boolean ret = true;
 
 		switch (item.getItemId()) {
+		case CONTEXT_MENU1_ID:
+			Intent intent = new Intent(this, GridActivity.class);
+			intent.setAction(Intent.ACTION_VIEW);
+			startActivity(intent);
+			return true;
 		case MENU_LOAD_KEY:
 			openFileManeger();
-			//			onOIFileManagerOptionsItemSelected(4, "Choose file to open"); //$NON-NLS-1$
-			break;
+			return true;
 		case MENU_ASSETS_KEY:
 			callAssetsActivity();
-			break;
+			return true;
+		case MENU_EDITOR_KEY:
+			callEditorActivity();
+			return true;
 		default:
-			ret = super.onOptionsItemSelected(item);
-			break;
+			return super.onContextItemSelected(item);
 		}
-		return ret;
 	}
 
 	private void openFileManeger() {

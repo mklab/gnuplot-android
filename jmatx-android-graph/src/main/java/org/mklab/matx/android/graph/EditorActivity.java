@@ -1,13 +1,15 @@
 package org.mklab.matx.android.graph;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.mklab.matx.android.customView.AddPredictionMessage;
@@ -18,34 +20,19 @@ import org.mklab.matx.android.keyboard.KeyboardListner;
 import org.mklab.matx.android.keyboard.MyKeyboard;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
-import android.text.Html;
-import android.text.Html.ImageGetter;
 import android.text.InputType;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.ActionMode;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -53,12 +40,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,41 +53,26 @@ import android.widget.ViewSwitcher;
 public class EditorActivity extends Activity implements KeyboardListner,
 		AddPredictionMessage {
 
-	private Canvas _canvas = null;
-	private Bitmap _bitmap = null;
 	int _screenHeight;
 	int _screenWidth;
-	private int _textHeight;
-	private int _textWidth;
-	private int _x;
-	private int _y;
-
-	private List<String> history = new ArrayList<>();
-	private int counter;
-	private int historyIndex;
 	// グローバル変数
 	Globals globals;
-	private LinearLayout mTerminalLayout;
 	private ViewSwitcher mSwitcher;
 	ScrollView mScrollView;
-	EditText editText;
-	// VIewの問題から最初に改行を挟んでおく（要改善）
-	private String consoleLineString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //$NON-NLS-1$
-	private String partialLine = ""; //$NON-NLS-1$
+	static EditText editText;
 	int _linetype;
 	int _linewidth;
 	String _justMode = "LEFT"; //$NON-NLS-1$
 	boolean _ready = false;
 	boolean _plotDataPresent = false;
 	String _plotData = ""; //$NON-NLS-1$
-	private EditorActivity _sessionParent = null;
-	private static final String BITMAP_MARK = "bitmapMarkGnuPlotMobile"; //$NON-NLS-1$
 	int GRAPTH_SIZE = 0;
 	TermSession mTermSession;
-	private boolean _isCalledIntent = false;
-	private MyKeyboard myKeyboard;
+	MyKeyboard myKeyboard;
 	private PredictiveView predictionView;
 	float fontSize = 25;
+	private String filePath = Environment.getExternalStorageDirectory()
+			+ "/GnuplotMobile/"; //$NON-NLS-1$
 
 	List<EditText> editTextList = new ArrayList<>();
 	private int predictionStrCount;
@@ -119,37 +87,59 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	protected int mTouchX;
 	protected int mTouchY;
 	private static final int FILE_RESULT_CODE = 54321;
-	private static final int ASSETS_RESULT_CODE = 4321;
+	static final int CONTEXT_MENU1_ID = 0;
+	static final int CONTEXT_MENU2_ID = 1;
+	private static final int MENU_LOAD_KEY = 1;
+	private static final int MENU_SAVE_KEY = 2;
+	private static final int MENU_CONSOLE_KEY = 3;
+	private TextView textView;
 
 	@Override
-	@SuppressWarnings("null")
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		System.out.println("onActivityResult"); //$NON-NLS-1$
 		System.out.println(requestCode);
 		if (requestCode == FILE_RESULT_CODE) {
 			Uri fileUri = (data != null ? (Uri) data.getData() : null);
 			if (fileUri != null) { // Everything went well => edit the file
-				String filePath = fileUri.getPath();
-				Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
-				Log.d("OIFILE Log", "filepath = " + filePath); //$NON-NLS-1$ //$NON-NLS-2$
-				Log.d("OIFILE Log", "Succes load file !! " + filePath); //$NON-NLS-1$ //$NON-NLS-2$
-				String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				this.history.add(command);
-				this.counter++;
-				this.historyIndex = this.counter;
-				EditorActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-
+				this.filePath = fileUri.getPath();
+				Toast.makeText(this, this.filePath, Toast.LENGTH_SHORT).show();
+				Log.d("OIFILE Log", "filepath = " + this.filePath); //$NON-NLS-1$ //$NON-NLS-2$
+				Log.d("OIFILE Log", "Succes load file !! " + this.filePath); //$NON-NLS-1$ //$NON-NLS-2$
+				loadScroiptFile(this.filePath);
+				this.textView.setText(this.filePath);
 			} else { // Error occurred
 				Toast.makeText(this, "No file found.", Toast.LENGTH_LONG).show(); //$NON-NLS-1$
 			}
-		} else if (requestCode == ASSETS_RESULT_CODE && data != null) {
-			EditorActivity.this.mTermSession.write("reset \n"); //$NON-NLS-1$
-			String filePath = Environment.getExternalStorageDirectory()
-					+ "/GnuplotMobile/sample.gnu"; //$NON-NLS-1$
-			String command = "load " + "\"" + filePath + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			EditorActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-			EditorActivity.this.mTermSession.write("reset \n"); //$NON-NLS-1$
 		}
+	}
+
+	// 書き込みメソッド
+	/**
+	 * @param filePath
+	 * @throws IOException
+	 */
+	@SuppressWarnings("resource")
+	public static void saveText(String filePath) throws IOException {
+		File file = new File(filePath);
+		if (file.exists()) {
+			file.delete();
+		}
+		file.getParentFile().mkdir();
+
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(file, true);
+			OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8"); //$NON-NLS-1$
+			BufferedWriter bw = new BufferedWriter(osw);
+			String str = editText.getText().toString();
+			System.out.println(filePath);
+			System.out.println("WRITE * \n" + str); //$NON-NLS-1$
+			bw.write(str);
+			bw.flush();
+			bw.close();
+		} catch (Exception e) {
+		}
+
 	}
 
 	/** Called when the activity is first created. */
@@ -157,23 +147,55 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editor);
-		this.editText = (EditText) findViewById(R.id.editerEditText);
-		this.editText.setBackgroundColor(Color.BLACK);
-		this.editText.setTextColor(Color.WHITE);
-		this.editText.setTextSize(this.fontSize);
-		this.editTextList.add(this.editText);
-		this.editText.requestFocus();
+		EditorActivity.editText = (EditText) findViewById(R.id.editerEditText);
+		EditorActivity.editText.setBackgroundColor(Color.BLACK);
+		EditorActivity.editText.setTextColor(Color.WHITE);
+		EditorActivity.editText.setTextSize(this.fontSize);
+		this.editTextList.add(EditorActivity.editText);
+		EditorActivity.editText.requestFocus();
 		this.predictionView = (PredictiveView) findViewById(R.id.CustomView);
 		this.predictionView.setSize(300, 300);
 		this.predictionView.setContext(this);
-		this.predictionView.setfontsize(this.fontSize*2);
-
+		this.predictionView.setfontsize(this.fontSize * 2);
+		this.textView = (TextView) findViewById(R.id.fileNameText);
+		this.textView.setText(this.filePath);
 		methodNameLoader();
 		commandNameLoader();
 
 		setKeyboard();
 		onNewIntent(getIntent());
 
+	}
+
+	// オプションメニューが最初に呼び出される時に1度だけ呼び出されます
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		menu.add(0, MENU_LOAD_KEY, 0, "Load Script File").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER);
+		menu.add(0, MENU_SAVE_KEY, 0, "Save Script File").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER);
+		menu.add(0, MENU_CONSOLE_KEY, 0, "Move Console").setShowAsAction( //$NON-NLS-1$
+				MenuItem.SHOW_AS_ACTION_NEVER);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_LOAD_KEY:
+			openFileManeger();
+			return true;
+		case MENU_SAVE_KEY:
+			writeScriptFile();
+			return true;
+		case MENU_CONSOLE_KEY:
+			callConsoleActivity();
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
 
 	private void openFileManeger() {
@@ -183,9 +205,71 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		startActivityForResult(intent, FILE_RESULT_CODE);
 	}
 
-	private void callAssetsActivity() {
-		Intent intent = new Intent(this, AssetsActivity.class);
-		startActivityForResult(intent, ASSETS_RESULT_CODE);
+	private void writeScriptFile() {
+		// TODO Auto-generated method stub
+		// テキスト入力を受け付けるビューを作成します。
+		final EditText editView = new EditText(this);
+		editView.setText(this.filePath);
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle("Please input save file path") //$NON-NLS-1$
+				// setViewにてビューを設定します。
+				.setView(editView)
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() { //$NON-NLS-1$
+							@Override
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								try {
+									saveText(editView.getText().toString());
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}).setNegativeButton("Cancel", //$NON-NLS-1$
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+							}
+						}).show();
+	}
+
+	private void callConsoleActivity() {
+		finish();
+		// Intent intent = new Intent(this, MainActivity.class);
+		// startActivityForResult(intent, ASSETS_RESULT_CODE);
+	}
+
+	public void loadScroiptFile(String filePath) {
+		try {
+			EditorActivity.editText.setText(readText(filePath));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// 読み込みメソッド
+	/**
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	public static String readText(String path) throws IOException {
+		@SuppressWarnings("resource")
+		FileInputStream in = new FileInputStream(new File(path));
+		@SuppressWarnings("resource")
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		StringBuffer sb = new StringBuffer();
+		String sbs;
+		while ((sbs = reader.readLine()) != null) {
+			sb.append(sbs);
+			sb.append("\n"); //$NON-NLS-1$
+		}
+		in.close();
+		System.out.println(sb.toString());
+		return sb.toString();
 	}
 
 	private void setKeyboard() {
@@ -195,7 +279,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		this.myKeyboard = (MyKeyboard) findViewById(R.id.myKeyboard);
 		this.myKeyboard.setKeyboardLisner(this);
-		setEditText(this.editText);
+		setEditText(EditorActivity.editText);
 	}
 
 	@Override
@@ -306,7 +390,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		}
 		// if mouse move
 		if (key_code < 0) {
-			this.predictionView.setLastCursorPoint(this.editText
+			this.predictionView.setLastCursorPoint(EditorActivity.editText
 					.getSelectionEnd());
 		}
 	}
@@ -322,7 +406,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 
 	@Override
 	public void sendInputText(String inputText) {
-		if (this.predictionView.getLastCursorPoint() + this.predictionStrCount != this.editText
+		if (this.predictionView.getLastCursorPoint() + this.predictionStrCount != EditorActivity.editText
 				.getSelectionEnd()) {
 			resetPrediction();
 		}
@@ -338,12 +422,12 @@ public class EditorActivity extends Activity implements KeyboardListner,
 			CustomEditTextFunction.insertText(getFocusIsEnabledEditText(),
 					inputText);
 		if (inputText.length() > 1 || this.symbols.indexOf(inputText) > 0
-				|| this.editText.getText().toString().isEmpty()) {
+				|| EditorActivity.editText.getText().toString().isEmpty()) {
 			resetPrediction();
 		} else {
 			this.predictionStrCount += 1;
 			System.out.println(this.predictionStrCount);
-			String pre = this.editText
+			String pre = EditorActivity.editText
 					.getText()
 					.toString()
 					.substring(
@@ -415,49 +499,52 @@ public class EditorActivity extends Activity implements KeyboardListner,
 
 	@Override
 	public void addFunction(String function, int lastCursorPoint) {
-		String frontStr = this.editText.getText().toString()
+		String frontStr = EditorActivity.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
-		String backStr = this.editText
+		String backStr = EditorActivity.editText
 				.getText()
 				.toString()
-				.substring(this.editText.getSelectionEnd(),
-						this.editText.getText().toString().length());
-		this.editText.setText(frontStr + function + "()" + backStr); //$NON-NLS-1$
-		this.editText.setSelection(lastCursorPoint + function.length() + 1);
+				.substring(EditorActivity.editText.getSelectionEnd(),
+						EditorActivity.editText.getText().toString().length());
+		EditorActivity.editText.setText(frontStr + function + "()" + backStr); //$NON-NLS-1$
+		EditorActivity.editText.setSelection(lastCursorPoint
+				+ function.length() + 1);
 		resetPrediction();
 	}
 
 	@Override
 	public void addVariable(String var, int lastCursorPoint) {
-		String frontStr = this.editText.getText().toString()
+		String frontStr = EditorActivity.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
-		String backStr = this.editText
+		String backStr = EditorActivity.editText
 				.getText()
 				.toString()
-				.substring(this.editText.getSelectionEnd(),
-						this.editText.getText().toString().length());
-		this.editText.setText(frontStr + var + backStr);
-		this.editText.setSelection(lastCursorPoint + var.length());
+				.substring(EditorActivity.editText.getSelectionEnd(),
+						EditorActivity.editText.getText().toString().length());
+		EditorActivity.editText.setText(frontStr + var + backStr);
+		EditorActivity.editText.setSelection(lastCursorPoint + var.length());
 		resetPrediction();
 	}
 
 	@Override
 	public void addCommand(String command, int lastCursorPoint) {
-		String frontStr = this.editText.getText().toString()
+		String frontStr = EditorActivity.editText.getText().toString()
 				.substring(0, this.predictionView.getLastCursorPoint());
-		String backStr = this.editText
+		String backStr = EditorActivity.editText
 				.getText()
 				.toString()
-				.substring(this.editText.getSelectionEnd(),
-						this.editText.getText().toString().length());
-		this.editText.setText(frontStr + command + " " + backStr); //$NON-NLS-1$
-		this.editText.setSelection(lastCursorPoint + command.length() + 1);
+				.substring(EditorActivity.editText.getSelectionEnd(),
+						EditorActivity.editText.getText().toString().length());
+		EditorActivity.editText.setText(frontStr + command + " " + backStr); //$NON-NLS-1$
+		EditorActivity.editText.setSelection(lastCursorPoint + command.length()
+				+ 1);
 		resetPrediction();
 	}
 
 	private void resetPrediction() {
-		System.out.println("reset  " + this.editText.getSelectionStart()); //$NON-NLS-1$
-		this.predictionView.setLastCursorPoint(this.editText
+		System.out
+				.println("reset  " + EditorActivity.editText.getSelectionStart()); //$NON-NLS-1$
+		this.predictionView.setLastCursorPoint(EditorActivity.editText
 				.getSelectionStart());
 		this.predictionView.clear();
 		this.predictionStrCount = 0;
@@ -466,9 +553,9 @@ public class EditorActivity extends Activity implements KeyboardListner,
 
 	@Override
 	public void cerateMessage(String message) {
-		this.editText.setText(message);
-		Editable result = this.editText.getText();
-		this.editText.setSelection(result.toString().length());
+		EditorActivity.editText.setText(message);
+		Editable result = EditorActivity.editText.getText();
+		EditorActivity.editText.setSelection(result.toString().length());
 		resetPrediction();
 	}
 
@@ -479,7 +566,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		this.predictionView.setUpdateVariableList(this.predictionVariableList);
 		this.predictionView.setCount(this.inputCount);
 		// ビューを意図的に更新する
-		this.editText.setWidth(this.editText.getWidth());
+		EditorActivity.editText.setWidth(EditorActivity.editText.getWidth());
 	}
 
 	private void prediction(String input) {
@@ -501,7 +588,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 			for (final String c : this.commandList) {
 				if (c.startsWith(input)) {
 					this.predictionCommandList.add(c);
-					int leftSize = (int) (c.length() * this.editText
+					int leftSize = (int) (c.length() * EditorActivity.editText
 							.getTextSize());
 					// 二段目に移動させる
 					if ((left + leftSize) > widthSize) {
@@ -527,8 +614,10 @@ public class EditorActivity extends Activity implements KeyboardListner,
 			}
 		}
 		if (predictionCount > 0) {
-			this.predictionView.setSize((int) widthSize,
-					(int) (this.editText.getTextSize() * (top + 2) * 1.1));
+			this.predictionView
+					.setSize((int) widthSize,
+							(int) (EditorActivity.editText.getTextSize()
+									* (top + 2) * 1.1));
 		} else {
 			this.predictionView.setSize(0, 0);
 		}
