@@ -86,11 +86,9 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	Globals globals;
 	private LinearLayout mTerminalLayout;
 	private ViewSwitcher mSwitcher;
-	TextView mTextView;
-	TextView promptTextView;
 	ScrollView mScrollView;
 	EditText editText;
-	// VIewの問題から最初に開業を挟んでおく（要改善）
+	// VIewの問題から最初に改行を挟んでおく（要改善）
 	private String consoleLineString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n"; //$NON-NLS-1$
 	private String partialLine = ""; //$NON-NLS-1$
 	int _linetype;
@@ -106,7 +104,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	private boolean _isCalledIntent = false;
 	private MyKeyboard myKeyboard;
 	private PredictiveView predictionView;
-	float fontSize = 20;
+	float fontSize = 25;
 
 	List<EditText> editTextList = new ArrayList<>();
 	private int predictionStrCount;
@@ -123,8 +121,6 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	private static final int FILE_RESULT_CODE = 54321;
 	private static final int ASSETS_RESULT_CODE = 4321;
 
-	
-	
 	@Override
 	@SuppressWarnings("null")
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -156,13 +152,24 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		}
 	}
 
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editor);
-		this.editText = (EditText) findViewById(R.id.edit_command);
+		this.editText = (EditText) findViewById(R.id.editerEditText);
+		this.editText.setBackgroundColor(Color.BLACK);
+		this.editText.setTextColor(Color.WHITE);
+		this.editText.setTextSize(this.fontSize);
+		this.editTextList.add(this.editText);
 		this.editText.requestFocus();
+		this.predictionView = (PredictiveView) findViewById(R.id.CustomView);
+		this.predictionView.setSize(300, 300);
+		this.predictionView.setContext(this);
+		this.predictionView.setfontsize(this.fontSize*2);
+
+		methodNameLoader();
+		commandNameLoader();
 
 		setKeyboard();
 		onNewIntent(getIntent());
@@ -190,7 +197,6 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		this.myKeyboard.setKeyboardLisner(this);
 		setEditText(this.editText);
 	}
-
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -292,28 +298,30 @@ public class EditorActivity extends Activity implements KeyboardListner,
 
 	@Override
 	public void sendKeyDown(int key_code) {
-		// TODO Auto-generated method stub
-		System.out.println("KEY CODE " + key_code); //$NON-NLS-1$
-		resetPrediction();
-		if ((key_code == KeyEvent.KEYCODE_ENTER)
-				&& (EditorActivity.this._ready == true)) {
-			String command = EditorActivity.this.editText.getText().toString();
-			this.history.add(command);
-			this.counter++;
-			this.historyIndex = this.counter;
-			EditorActivity.this.editText.setText(""); //$NON-NLS-1$
-			EditorActivity.this.mTermSession.write(command + "\n"); //$NON-NLS-1$
-		} else {
-			CustomEditTextFunction.sendKeyCode(this.editTextList.get(0),
+		// Log.d("CONSOLE_FRAGMENT", "onOnKeyDown " + key_code);
+		if (getFocusIsEnabledEditText() != null) {
+			resetPrediction();
+			CustomEditTextFunction.sendKeyCode(getFocusIsEnabledEditText(),
 					key_code);
 		}
+		// if mouse move
+		if (key_code < 0) {
+			this.predictionView.setLastCursorPoint(this.editText
+					.getSelectionEnd());
+		}
+	}
+
+	private EditText getFocusIsEnabledEditText() {
+		for (EditText editText : this.editTextList) {
+			System.out.println("focus is " + editText.hasFocus()); //$NON-NLS-1$
+			if (editText.findFocus() != null)
+				return editText;
+		}
+		return null;
 	}
 
 	@Override
 	public void sendInputText(String inputText) {
-		// TODO Auto-generated method stub
-		System.out.println("KEY INPUT " + inputText); //$NON-NLS-1$
-		this.historyIndex = this.counter;
 		if (this.predictionView.getLastCursorPoint() + this.predictionStrCount != this.editText
 				.getSelectionEnd()) {
 			resetPrediction();
@@ -325,20 +333,16 @@ public class EditorActivity extends Activity implements KeyboardListner,
 
 		this.predictionView.clear();
 		this.inputCount = inputText.length();
-		Log.d("CONSOLE", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
-		if (!inputText.equals("\n")) { //$NON-NLS-1$
-			CustomEditTextFunction.insertText(this.editTextList.get(0),
+		Log.d("EDITOR", "input text is " + inputText); //$NON-NLS-1$ //$NON-NLS-2$
+		if (getFocusIsEnabledEditText() != null)
+			CustomEditTextFunction.insertText(getFocusIsEnabledEditText(),
 					inputText);
-		}
 		if (inputText.length() > 1 || this.symbols.indexOf(inputText) > 0
 				|| this.editText.getText().toString().isEmpty()) {
 			resetPrediction();
 		} else {
 			this.predictionStrCount += 1;
 			System.out.println(this.predictionStrCount);
-			System.out.println(this.editText.getText().toString() + "   " //$NON-NLS-1$
-					+ this.predictionView.getLastCursorPoint() + "  " //$NON-NLS-1$
-					+ this.predictionStrCount);
 			String pre = this.editText
 					.getText()
 					.toString()
@@ -473,10 +477,9 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		this.predictionView.setUpdateFunctiuonList(this.predictionFunctionList);
 		this.predictionView.setUpdateCommandList(this.predictionCommandList);
 		this.predictionView.setUpdateVariableList(this.predictionVariableList);
-		this.predictionView.setfontsize(this.mTextView.getTextSize() * 0.9f);
 		this.predictionView.setCount(this.inputCount);
 		// ビューを意図的に更新する
-		this.promptTextView.setText(this.promptTextView.getText().toString());
+		this.editText.setWidth(this.editText.getWidth());
 	}
 
 	private void prediction(String input) {
@@ -525,14 +528,10 @@ public class EditorActivity extends Activity implements KeyboardListner,
 		}
 		if (predictionCount > 0) {
 			this.predictionView.setSize((int) widthSize,
-					(int) (this.mTextView.getTextSize() * (top + 2) * 1.1));
+					(int) (this.editText.getTextSize() * (top + 2) * 1.1));
 		} else {
 			this.predictionView.setSize(0, 0);
 		}
-		System.out.println(predictionCount);
-		System.out.println((int) widthSize + "  " //$NON-NLS-1$
-				+ (int) (this.mTextView.getTextSize() * (top + 2) * 1.1));
-		System.out.println(this.predictionFunctionList);
 	}
 
 	private void methodNameLoader() {
@@ -638,46 +637,5 @@ public class EditorActivity extends Activity implements KeyboardListner,
 			add("0"); //$NON-NLS-1$
 		}
 	};
-
-	private void addTexiview(Bitmap bitmap) {
-		// Bitmap bmp = bitmap;
-		if (this.globals.bitmaps.size() == 0 && bitmap == null) {
-			this.mTextView.setText(this.consoleLineString);
-			return;
-		}
-		ImageGetter imageGetter = new ImageGetter() {
-			@Override
-			@SuppressWarnings({ "deprecation", "boxing" })
-			public Drawable getDrawable(String source) {
-				String[] sources = source.split(" "); //$NON-NLS-1$
-				Drawable d = new BitmapDrawable(
-						EditorActivity.this.globals.bitmaps.get(Integer
-								.valueOf(sources[1])));
-				d.setBounds(0, 0, 0 + EditorActivity.this.GRAPTH_SIZE,
-						0 + EditorActivity.this.GRAPTH_SIZE);
-				return d;
-			}
-		};
-
-		if (bitmap != null) {
-			this.globals.bitmaps.add(bitmap);
-			String bitmapNum = String.valueOf(this.globals.bitmaps.size() - 1);
-			this.consoleLineString = this.consoleLineString + BITMAP_MARK + " " //$NON-NLS-1$
-					+ bitmapNum + "\n"; //$NON-NLS-1$
-		}
-
-		String imageStr = ""; //$NON-NLS-1$
-		String textLines[] = this.consoleLineString.split("\\n"); //$NON-NLS-1$
-		for (String line : textLines) {
-			if (line.indexOf(BITMAP_MARK) != -1) {
-				imageStr = imageStr + "<img src='" + line + "'/>" //$NON-NLS-1$ //$NON-NLS-2$ 
-						+ "<BR>"; //$NON-NLS-1$
-			} else {
-				imageStr = imageStr + line + "<BR>"; //$NON-NLS-1$
-			}
-		}
-		CharSequence htmlstr = Html.fromHtml(imageStr, imageGetter, null);
-		this.mTextView.setText(htmlstr);
-	}
 
 }

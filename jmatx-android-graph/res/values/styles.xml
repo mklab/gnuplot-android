@@ -12,7 +12,14 @@
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowRadius">0</item>
     </style>
-
+    
+    <style name="MyTheme" parent="android:style/Theme.Holo">
+        <item name="android:actionBarTabStyle">@style/MyActionBarTabStyle</item>
+        <item name="android:actionBarSize">40dp</item>
+    </style>
+    <style name="MyActionBarTabStyle" parent="android:style/Widget.Holo.ActionBar.TabView">
+        <item name="android:height">40dp</item>
+    </style>
     <!-- Widget Styles -->
 
     <style name="Widget.KeyboardView" parent="android:Widget.KeyboardView">

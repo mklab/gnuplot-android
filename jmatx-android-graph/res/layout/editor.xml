@@ -2,7 +2,8 @@
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/viewSwitcher"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:background="#000000" >
 
     <LinearLayout
         android:id="@+id/terminalLayout"
@@ -10,44 +11,41 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
+        <TextView
+            android:id="@+id/fileNameText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:text="TextView" />
+
         <ScrollView
-            android:id="@+id/scrollView"
+            android:id="@+id/ScrollView01"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            android:scrollbars="vertical" >
+            android:layout_weight="10"
+            android:fastScrollEnabled="true" >
 
             <LinearLayout
                 android:id="@+id/LinearLayout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-
                 android:orientation="vertical" >
 
                 <EditText
-                    android:id="@+id/edit_command"
+                    android:id="@+id/editerEditText"
+                    style="?android:attr/textViewStyle"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="#000000"
                     android:textColor="@null"
-                    android:textSize="16sp" />
+                    android:textSize="20sp" />
 
-                <LinearLayout
-                    android:id="@+id/LinearLayout01"
+                <org.mklab.matx.android.customView.PredictiveView
+                    android:id="@+id/CustomView"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:orientation="vertical" >
-
-                    <org.mklab.matx.android.customView.PredictiveView
-                        android:id="@+id/CustomView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1" />
-                </LinearLayout>
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1" />
             </LinearLayout>
         </ScrollView>
 

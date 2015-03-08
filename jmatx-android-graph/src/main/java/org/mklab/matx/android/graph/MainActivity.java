@@ -156,6 +156,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 	static final int CONTEXT_MENU2_ID = 1;
 	private static final int MENU_LOAD_KEY = 1;
 	private static final int MENU_ASSETS_KEY = 2;
+	private static final int MENU_EDITOR_KEY = 3;
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
@@ -169,6 +170,7 @@ public class MainActivity extends Activity implements KeyboardListner,
 		menu.add(0, CONTEXT_MENU1_ID, 0, "Save the Graph"); //$NON-NLS-1$
 		menu.add(0, MENU_LOAD_KEY, 0, "Load Script File"); //$NON-NLS-1$
 		menu.add(0, MENU_ASSETS_KEY, 0, "Load Sample Script File"); //$NON-NLS-1$
+		menu.add(0, MENU_EDITOR_KEY, 0, "Open Editor"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -219,6 +221,9 @@ public class MainActivity extends Activity implements KeyboardListner,
 			return true;
 		case MENU_ASSETS_KEY:
 			callAssetsActivity();
+			return true;
+		case MENU_EDITOR_KEY:
+			callEditorActivity();
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -504,6 +509,10 @@ public class MainActivity extends Activity implements KeyboardListner,
 
 	private void callAssetsActivity() {
 		Intent intent = new Intent(this, AssetsActivity.class);
+		startActivityForResult(intent, ASSETS_RESULT_CODE);
+	}
+	private void callEditorActivity() {
+		Intent intent = new Intent(this, EditorActivity.class);
 		startActivityForResult(intent, ASSETS_RESULT_CODE);
 	}
 
