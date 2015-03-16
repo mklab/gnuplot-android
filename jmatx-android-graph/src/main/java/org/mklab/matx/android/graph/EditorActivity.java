@@ -175,7 +175,7 @@ public class EditorActivity extends Activity implements KeyboardListner,
 				MenuItem.SHOW_AS_ACTION_NEVER);
 		menu.add(0, MENU_SAVE_KEY, 0, "Save Script File").setShowAsAction( //$NON-NLS-1$
 				MenuItem.SHOW_AS_ACTION_NEVER);
-		menu.add(0, MENU_CONSOLE_KEY, 0, "Move Console").setShowAsAction( //$NON-NLS-1$
+		menu.add(0, MENU_CONSOLE_KEY, 0, "Close Editor").setShowAsAction( //$NON-NLS-1$
 				MenuItem.SHOW_AS_ACTION_NEVER);
 
 		return super.onCreateOptionsMenu(menu);
@@ -285,21 +285,6 @@ public class EditorActivity extends Activity implements KeyboardListner,
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		resetPrediction();
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (this._plotDataPresent) {
-				if (this.mSwitcher.getDisplayedChild() != 1) {
-					this.mSwitcher.showPrevious();
-					return true;
-				} else {
-					return super.onKeyDown(keyCode, event);
-				}
-			} else if (this.mSwitcher.getDisplayedChild() != 0) {
-				this.mSwitcher.showPrevious();
-				return true;
-			} else {
-				return super.onKeyDown(keyCode, event);
-			}
-		}
 		return super.onKeyDown(keyCode, event);
 	}
 

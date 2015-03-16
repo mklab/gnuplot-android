@@ -15,8 +15,7 @@
             android:id="@+id/fileNameText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
-            android:text="TextView" />
+            android:background="@drawable/border" />
 
         <ScrollView
             android:id="@+id/ScrollView01"
