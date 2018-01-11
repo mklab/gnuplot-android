@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gnuplot Mobile</string>
+    <string name="title_activity_grid">Salvar Imagem</string>
+    <string name="title_activity_assets">Carregar Arquivo de Exemplo</string>
+    <string name="hello_world">Olá Mundo!</string>
+    <string name="action_settings">Configurações</string>
+
+</resources>
